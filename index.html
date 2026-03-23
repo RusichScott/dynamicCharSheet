@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -108,8 +109,121 @@
 
         .inline-fields {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: minmax(0, 1.28fr) minmax(0, 1.28fr) minmax(160px, 0.72fr);
             gap: 15px;
+        }
+
+        .inline-fields .field-box {
+            min-width: 0;
+        }
+
+        .field-box.race-box,
+        .field-box.class-box,
+        .field-box.exp-box {
+            min-width: 0;
+        }
+
+        .character-input,
+        .character-select {
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: inherit;
+            outline: none;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .character-select {
+            appearance: none;
+            padding-right: 8px;
+        }
+
+        .selection-line {
+            display: grid;
+            grid-template-columns: minmax(132px, 0.96fr) minmax(0, 1.22fr);
+            align-items: center;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .selection-line.with-level {
+            grid-template-columns: minmax(96px, 0.84fr) minmax(0, 1.28fr) 56px;
+        }
+
+        .selection-main {
+            min-width: 0;
+        }
+
+        .selection-sub {
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            overflow: hidden;
+        }
+
+        .selection-sub.is-empty {
+            opacity: 0.7;
+        }
+
+        .selection-bracket {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #5b4a34;
+            flex: 0 0 auto;
+        }
+
+        .selection-sub-select {
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+
+        .race-box .selection-main,
+        .race-box .selection-sub-select,
+        .class-box .selection-main,
+        .class-box .selection-sub-select {
+            font-size: 0.95rem;
+        }
+
+        .level-input {
+            width: 56px;
+            text-align: right;
+            margin-left: auto;
+            font-weight: 700;
+        }
+
+        .experience-line {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .experience-separator {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #5b4a34;
+            flex: 0 0 auto;
+        }
+
+        .experience-threshold {
+            text-align: right;
+            font-weight: 700;
+            color: #5b4a34;
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+
+        .experience-current {
+            flex: 1 1 auto;
+            min-width: 72px;
+            text-align: left;
+        }
+
+        .character-select,
+        .character-input {
+            min-width: 0;
         }
 
         .field-box,
@@ -621,6 +735,14 @@
                 padding: 12px;
             }
 
+            .selection-line {
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            }
+
+            .selection-line.with-level {
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 72px;
+            }
+
             .lookup-name,
             .lookup-select,
             .editable-inline,
@@ -733,6 +855,31 @@
 
             .portrait-area {
                 height: 210px;
+            }
+
+            .selection-line {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .selection-line.with-level {
+                grid-template-columns: 1fr;
+            }
+
+            .selection-main,
+            .selection-sub,
+            .level-input {
+                width: 100%;
+                flex-basis: auto;
+            }
+
+            .level-input {
+                margin-left: 0;
+                text-align: left;
+            }
+
+            .experience-line {
+                grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
             }
 
             .portrait-clear {
@@ -1080,17 +1227,44 @@
                     <input class="editable" type="text" value="">
                 </div>
                 <div class="inline-fields">
-                    <div class="field-box">
+                    <div class="field-box race-box">
                         <div class="field-label">Раса</div>
-                        <input class="editable-inline small-input" type="text" value="">
+                        <div class="selection-line">
+                            <select class="character-select small-input selection-main" data-character-race>
+                                <option value="">Раса</option>
+                            </select>
+                            <div class="selection-sub is-empty" data-subrace-wrap>
+                                <span class="selection-bracket">(</span>
+                                <select class="character-select small-input selection-sub-select" data-character-subrace>
+                                    <option value="">Подраса</option>
+                                </select>
+                                <span class="selection-bracket">)</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="field-box">
+                    <div class="field-box class-box">
                         <div class="field-label">Класс и уровень</div>
-                        <input class="editable-inline small-input" type="text" value="">
+                        <div class="selection-line with-level">
+                            <select class="character-select small-input selection-main" data-character-class>
+                                <option value="">Класс</option>
+                            </select>
+                            <div class="selection-sub is-empty" data-subclass-wrap>
+                                <span class="selection-bracket">(</span>
+                                <select class="character-select small-input selection-sub-select" data-character-subclass>
+                                    <option value="">Подкласс</option>
+                                </select>
+                                <span class="selection-bracket">)</span>
+                            </div>
+                            <input class="character-input small-input level-input" type="number" value="1" min="1" max="20" data-character-level>
+                        </div>
                     </div>
-                    <div class="field-box">
+                    <div class="field-box exp-box">
                         <div class="field-label">Опыт</div>
-                        <input class="editable-inline small-input" type="text" value="">
+                        <div class="experience-line">
+                            <input class="character-input small-input experience-current" type="text" value="0" inputmode="numeric" autocomplete="off" spellcheck="false" data-experience-current>
+                            <span class="experience-separator">/</span>
+                            <span class="experience-threshold" data-experience-threshold>300</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1100,33 +1274,33 @@
             <div class="abilities-column">
                 <div class="ability-box">
                     <div class="ability-name">Сила</div>
-                    <input class="ability-score-input" type="number" value="0" data-ability="str">
-                    <input class="ability-mod-input" type="text" value="-5" data-ability-mod="str" readonly>
+                    <input class="ability-score-input" type="number" value="8" data-ability="str">
+                    <input class="ability-mod-input" type="text" value="-1" data-ability-mod="str" readonly>
                 </div>
                 <div class="ability-box">
                     <div class="ability-name">Ловкость</div>
-                    <input class="ability-score-input" type="number" value="0" data-ability="dex">
-                    <input class="ability-mod-input" type="text" value="-5" data-ability-mod="dex" readonly>
+                    <input class="ability-score-input" type="number" value="8" data-ability="dex">
+                    <input class="ability-mod-input" type="text" value="-1" data-ability-mod="dex" readonly>
                 </div>
                 <div class="ability-box">
                     <div class="ability-name">Телосложение</div>
-                    <input class="ability-score-input" type="number" value="0" data-ability="con">
-                    <input class="ability-mod-input" type="text" value="-5" data-ability-mod="con" readonly>
+                    <input class="ability-score-input" type="number" value="8" data-ability="con">
+                    <input class="ability-mod-input" type="text" value="-1" data-ability-mod="con" readonly>
                 </div>
                 <div class="ability-box">
                     <div class="ability-name">Интеллект</div>
-                    <input class="ability-score-input" type="number" value="0" data-ability="int">
-                    <input class="ability-mod-input" type="text" value="-5" data-ability-mod="int" readonly>
+                    <input class="ability-score-input" type="number" value="8" data-ability="int">
+                    <input class="ability-mod-input" type="text" value="-1" data-ability-mod="int" readonly>
                 </div>
                 <div class="ability-box">
                     <div class="ability-name">Мудрость</div>
-                    <input class="ability-score-input" type="number" value="0" data-ability="wis">
-                    <input class="ability-mod-input" type="text" value="-5" data-ability-mod="wis" readonly>
+                    <input class="ability-score-input" type="number" value="8" data-ability="wis">
+                    <input class="ability-mod-input" type="text" value="-1" data-ability-mod="wis" readonly>
                 </div>
                 <div class="ability-box">
                     <div class="ability-name">Харизма</div>
-                    <input class="ability-score-input" type="number" value="0" data-ability="cha">
-                    <input class="ability-mod-input" type="text" value="-5" data-ability-mod="cha" readonly>
+                    <input class="ability-score-input" type="number" value="8" data-ability="cha">
+                    <input class="ability-mod-input" type="text" value="-1" data-ability-mod="cha" readonly>
                 </div>
             </div>
 
@@ -1139,7 +1313,7 @@
                         </div>
                         <div class="combat-item">
                             <span class="combat-label">Инициатива</span>
-                            <input class="combat-number" type="text" value="-5" data-initiative-output readonly>
+                            <input class="combat-number" type="text" value="-1" data-initiative-output readonly>
                         </div>
                         <div class="combat-item">
                             <span class="combat-label">Бонус мастерства</span>
@@ -1242,15 +1416,15 @@
                     </div>
                     <div class="field-box">
                         <div class="field-label">Пасс. восприятие</div>
-                        <input class="editable-inline small-input" type="text" value="5" data-passive-output="Восприятие" readonly>
+                        <input class="editable-inline small-input" type="text" value="9" data-passive-output="Восприятие" readonly>
                     </div>
                     <div class="field-box">
                         <div class="field-label">Пасс. проницательность</div>
-                        <input class="editable-inline small-input" type="text" value="5" data-passive-output="Проницательность" readonly>
+                        <input class="editable-inline small-input" type="text" value="9" data-passive-output="Проницательность" readonly>
                     </div>
                     <div class="field-box">
                         <div class="field-label">Пасс. анализ</div>
-                        <input class="editable-inline small-input" type="text" value="5" data-passive-output="Анализ" readonly>
+                        <input class="editable-inline small-input" type="text" value="9" data-passive-output="Анализ" readonly>
                     </div>
                 </div>
             </div>
@@ -1583,6 +1757,251 @@
     </script>
     <script>
         const PROFICIENCY_BONUS = 2;
+        const EXPERIENCE_THRESHOLDS = {
+            1: 300,
+            2: 900,
+            3: 2700,
+            4: 6500,
+            5: 14000,
+            6: 23000,
+            7: 34000,
+            8: 48000,
+            9: 64000,
+            10: 85000,
+            11: 100000,
+            12: 120000,
+            13: 140000,
+            14: 165000,
+            15: 195000,
+            16: 225000,
+            17: 265000,
+            18: 305000,
+            19: 355000,
+            20: 355000
+        };
+        const CHARACTER_KNOWLEDGE = {
+            races: [
+                { name: "Ааракокра", source: "POA / MPMM", subraces: [] },
+                { name: "Аасимар", source: "VGM / MPMM", subraces: ["Павший", "Защитник", "Бич", "Добрый", "Нейтральный", "Злой", "Падший", "Страж", "Карающий", "Небесный", "Вознесённый"] },
+                { name: "Авен", source: "PS:A / HB", subraces: [] },
+                { name: "Автогном", source: "SAS", subraces: [] },
+                { name: "Анафемный тифлинг", source: "HB:SGEH / HB", subraces: [] },
+                { name: "Астральный эльф", source: "SAS", subraces: [] },
+                { name: "Багбир", source: "VGM / MPMM", subraces: [] },
+                { name: "Вапитианец", source: "HB", subraces: [] },
+                { name: "Вегепигмей", source: "HB:SC / HB", subraces: [] },
+                { name: "Ведалкен", source: "GGR", subraces: [] },
+                { name: "Вердан", source: "AI", subraces: [] },
+                { name: "Ведьмовская кровь", source: "VRGR", subraces: [] },
+                { name: "Возрождённый", source: "VRGR", subraces: [] },
+                { name: "Гибрид Симиков", source: "GGR", subraces: [] },
+                { name: "Гит", source: "MTF", subraces: ["Гитъянки", "Гитцерай", "Гитзерай"] },
+                { name: "Гитъянки", source: "MPMM", subraces: [] },
+                { name: "Гитцерай", source: "MPMM", subraces: [] },
+                { name: "Гифф", source: "SAS", subraces: [] },
+                { name: "Глючный", source: "UA / HB", subraces: [] },
+                { name: "Глубинный гном", source: "MPMM", subraces: [] },
+                { name: "Глубинный дварф (Й'ха-нтлей)", source: "HB:SGEH / HB", subraces: [] },
+                { name: "Гнолл", source: "HB:MHH / HB", subraces: [] },
+                { name: "Гном", source: "PH14 / HB:MHH / HB", subraces: ["Лесной", "Скальный", "Глубинный", "Ледяной", "Кроткий", "Чумной", "Озерный", "Пустынный", "Теневой", "Кристальный", "Речной", "Огненный", "Грибной"] },
+                { name: "Гоббок", source: "HB:HGMH / HB", subraces: [] },
+                { name: "Гоблин", source: "VGM / MPMM", subraces: [] },
+                { name: "Голинн", source: "HB:HGMH / HB", subraces: [] },
+                { name: "Голиаф", source: "VGM / MPMM", subraces: [] },
+                { name: "Грацеза", source: "HB:MF / HB", subraces: [] },
+                { name: "Грунг", source: "OGA", subraces: [] },
+                { name: "Дампир", source: "VRGR / HB:MHH / HB:MF / HB", subraces: [] },
+                { name: "Дварф", source: "PH14 / HB:MHH / HB", subraces: ["Горный", "Холмов", "Дуэргар", "Арктический", "Глубинный", "Лавовый", "Пепельный", "Железный", "Каменный", "Полярный", "Щитовой", "Золотой", "Серый", "Чернокаменный"] },
+                { name: "Дженази", source: "POA / MPMM", subraces: ["Воздуха", "Воды", "Земли", "Огня", "Льда", "Пепла", "Грозы", "Дыма", "Пара", "Пыли", "Магмы", "Молнии", "Соли", "Грязи"] },
+                { name: "Драконорождённый", source: "PH14", subraces: ["Драконокровный", "Равенит", "Хроматический", "Металлический", "Драгоценный", "Чёрный", "Синий", "Зелёный", "Красный", "Белый", "Латунный", "Бронзовый", "Медный", "Золотой", "Серебряный", "Аметистовый", "Изумрудный", "Сапфировый", "Топазовый", "Хрустальный", "Лунный", "Солнечный", "Теневой", "Штормовой"] },
+                { name: "Древан", source: "HB:MF / HB", subraces: [] },
+                { name: "Дуэргар", source: "MPMM", subraces: [] },
+                { name: "Живой конструкт", source: "RLW", subraces: [] },
+                { name: "Зайцегон", source: "WBW / MPMM", subraces: [] },
+                { name: "Зиморождённые полурослики", source: "HB:MHH / HB", subraces: [] },
+                { name: "Исэцу", source: "HB:RGYR / HB", subraces: [] },
+                { name: "Кадавр", source: "HB:MF / HB", subraces: [] },
+                { name: "Калаштар", source: "RLW", subraces: [] },
+                { name: "Кендер", source: "SDQ", subraces: [] },
+                { name: "Кенку", source: "VGM / MPMM", subraces: [] },
+                { name: "Кентавр", source: "GGR / MPMM / HB:MHH / HB", subraces: [] },
+                { name: "Кицунэ", source: "HB:RGYR / HB", subraces: [] },
+                { name: "Кобольд", source: "VGM / MPMM", subraces: [] },
+                { name: "Кобольд Мидгарда", source: "HB:MHH / HB", subraces: [] },
+                { name: "Кованый", source: "RLW", subraces: [] },
+                { name: "Котовец", source: "HB:MF / HB", subraces: [] },
+                { name: "Леонин", source: "MOT", subraces: [] },
+                { name: "Липсик", source: "HB:MF / HB", subraces: [] },
+                { name: "Локата", source: "LR", subraces: [] },
+                { name: "Локсодон", source: "GGR", subraces: [] },
+                { name: "Лотол", source: "HB:HGMH / HB", subraces: [] },
+                { name: "Люди Иннистрада", source: "PS:In / HB", subraces: [] },
+                { name: "Люди Мидгарда", source: "HB:MHH / HB", subraces: [] },
+                { name: "Людоворон", source: "HB:MHH / HB", subraces: [] },
+                { name: "Людокрыса", source: "HB:MHH / HB", subraces: [] },
+                { name: "Людомедведь", source: "HB:MHH / HB", subraces: [] },
+                { name: "Людоящер", source: "VGM / MPMM", subraces: [] },
+                { name: "Львиная черепаха", source: "HB:RGYR / HB", subraces: [] },
+                { name: "Манекен", source: "HB:SGEH / HB", subraces: [] },
+                { name: "Минотавр", source: "GGR / MPMM / PS:A / HB:MHH / HB", subraces: [] },
+                { name: "Мицелиан", source: "HB:HGMH / HB", subraces: [] },
+                { name: "Морской эльф", source: "MPMM", subraces: [] },
+                { name: "Мышинец", source: "HB:MF / HB", subraces: [] },
+                { name: "Нагпа", source: "HB", subraces: [] },
+                { name: "Нагаджи", source: "HB", subraces: [] },
+                { name: "Нага", source: "PS:A / HB", subraces: [] },
+                { name: "Некрофаг", source: "HB", subraces: [] },
+                { name: "Ноктюрн", source: "HB", subraces: [] },
+                { name: "Нэко", source: "HB:RGYR / HB", subraces: [] },
+                { name: "Обитатель глубин", source: "HB:SGEH / HB", subraces: [] },
+                { name: "Обсидианец", source: "HB", subraces: [] },
+                { name: "Огрин", source: "HB", subraces: [] },
+                { name: "Огриллион", source: "HB", subraces: [] },
+                { name: "Оддлинг", source: "HB", subraces: [] },
+                { name: "Окаами", source: "HB:RGYR / HB", subraces: [] },
+                { name: "Ониксит", source: "HB", subraces: [] },
+                { name: "Оркоголовый", source: "HB", subraces: [] },
+                { name: "Осадный гоблин", source: "HB", subraces: [] },
+                { name: "Отмеченный драконом", source: "RLW", subraces: ["Выявления", "Исцеления", "Нахождения", "Обнаружения", "Писания", "Созидания", "Стражи", "Теней", "Штормов"] },
+                { name: "Офидий", source: "HB", subraces: [] },
+                { name: "Падший архонт", source: "HB", subraces: [] },
+                { name: "Пепельный", source: "HB", subraces: [] },
+                { name: "Первородный", source: "HB", subraces: [] },
+                { name: "Песчаник", source: "HB", subraces: [] },
+                { name: "Пикси", source: "HB / WBW", subraces: [] },
+                { name: "Погребённый", source: "HB", subraces: [] },
+                { name: "Подменыш", source: "RLW / MPMM", subraces: [] },
+                { name: "Ползущий", source: "HB", subraces: [] },
+                { name: "Порождённый бурей", source: "HB", subraces: [] },
+                { name: "Порождённый звёздами", source: "HB", subraces: [] },
+                { name: "Порождённый пустотой", source: "HB", subraces: [] },
+                { name: "Порождение бездны", source: "HB", subraces: [] },
+                { name: "Порождение дракона", source: "HB", subraces: [] },
+                { name: "Порождение луны", source: "HB", subraces: [] },
+                { name: "Порождение пламени", source: "HB", subraces: [] },
+                { name: "Потомок великана", source: "HB", subraces: ["Облачный", "Огненный", "Каменный", "Морозный", "Холмовой", "Штормовой"] },
+                { name: "Потомок гарпии", source: "HB", subraces: [] },
+                { name: "Потомок гидры", source: "HB", subraces: [] },
+                { name: "Потомок медузы", source: "HB", subraces: [] },
+                { name: "Потомок минотавра", source: "HB", subraces: [] },
+                { name: "Потомок феникса", source: "HB", subraces: [] },
+                { name: "Псоглавец", source: "HB", subraces: [] },
+                { name: "Пустотник", source: "HB", subraces: [] },
+                { name: "Пыльный", source: "HB", subraces: [] },
+                { name: "Нисикин", source: "HB:RGYR / HB", subraces: [] },
+                { name: "Омбраск", source: "HB:HGMH / HB", subraces: [] },
+                { name: "Онирождённый", source: "HB:RGYR / HB", subraces: [] },
+                { name: "Орк", source: "VGM / MPMM", subraces: [] },
+                { name: "Плазмоид", source: "SAS", subraces: [] },
+                { name: "Полуорк", source: "PH14", subraces: [] },
+                { name: "Полуэльф", source: "PH14", subraces: ["Высших эльфов", "Лесных эльфов", "Дроу", "Лунных эльфов", "Солнечных эльфов", "Морских эльфов"] },
+                { name: "Полурослик", source: "PH14", subraces: ["Коренастый", "Легконогий", "Призрачный", "Лотосден", "Бродячий", "Речной", "Тихий", "Кочевой", "Луговой"] },
+                { name: "Полусторонний", source: "HB:SGEH / HB", subraces: [] },
+                { name: "Порождение Бедствия", source: "HB:SGEH / HB", subraces: [] },
+                { name: "Пробуждённый", source: "HB:SC / HB", subraces: [] },
+                { name: "Проклятокровый", source: "HB:SGEH / HB", subraces: [] },
+                { name: "Ревенант", source: "UA / HB", subraces: [] },
+                { name: "Рюдзин", source: "HB:RGYR / HB", subraces: [] },
+                { name: "Сатир", source: "MOT / MPMM", subraces: [] },
+                { name: "Свое происхождение", source: "TCE", subraces: [] },
+                { name: "Сильва", source: "HB:SC / HB", subraces: [] },
+                { name: "Склизыш", source: "HB:MF / HB", subraces: [] },
+                { name: "Слизевик", source: "HB:HGMH / HB", subraces: [] },
+                { name: "Совлин", source: "SCC", subraces: [] },
+                { name: "Стик'Ти'Кал", source: "HB:MF / HB", subraces: [] },
+                { name: "Стрекающие", source: "HB:HGMH / HB", subraces: [] },
+                { name: "Табакси", source: "VGM / MPMM", subraces: [] },
+                { name: "Теневая фея", source: "HB:MHH / HB", subraces: [] },
+                { name: "Тератект", source: "HB:CN / HB", subraces: [] },
+                { name: "Тифлинг", source: "PH14", subraces: ["Асмодея", "Баалзебула", "Диспатера", "Фиерны", "Гласьи", "Левистуса", "Маммона", "Мефистофеля", "Зариэля", "Архидьявол", "Бездны", "Хтонический", "Инфернальный", "Дьявольский", "Абиссальный", "Адский", "Крылатый", "Ферал", "Крови демона", "Крови дьявола", "Адского пламени", "Тенерождённый"] },
+                { name: "Тлеющий", source: "HB:CN / HB", subraces: [] },
+                { name: "Тортл", source: "TP / MPMM", subraces: [] },
+                { name: "Три-крин", source: "SAS", subraces: [] },
+                { name: "Тритон", source: "VGM / MPMM", subraces: [] },
+                { name: "Троллеобразный", source: "HB:MHH / HB", subraces: [] },
+                { name: "Тэнгу", source: "HB:RGYR / HB", subraces: [] },
+                { name: "Фирболг", source: "VGM / MPMM", subraces: [] },
+                { name: "Флорен", source: "HB:CN / HB", subraces: [] },
+                { name: "Фунаюрэй", source: "HB:RGYR / HB", subraces: [] },
+                { name: "Фэйри", source: "WBW / MPMM", subraces: [] },
+                { name: "Хадози", source: "SAS", subraces: [] },
+                { name: "Ханамори", source: "HB:RGYR / HB", subraces: [] },
+                { name: "Ханива", source: "HB:RGYR / HB", subraces: [] },
+                { name: "Хенра", source: "PS:A / HB", subraces: [] },
+                { name: "Хобгоблин", source: "VGM / MPMM", subraces: [] },
+                { name: "Хобгоблин из Страны Фей", source: "UA / HB", subraces: [] },
+                { name: "Ракшасаборн", source: "HB", subraces: [] },
+                { name: "Рататоск", source: "HB", subraces: [] },
+                { name: "Рогатый", source: "HB", subraces: [] },
+                { name: "Ройный", source: "HB", subraces: [] },
+                { name: "Рунорожденный", source: "HB", subraces: [] },
+                { name: "Рыбочеловек", source: "HB", subraces: [] },
+                { name: "Сауриал", source: "HB", subraces: [] },
+                { name: "Светоч", source: "HB", subraces: [] },
+                { name: "Селки", source: "HB", subraces: [] },
+                { name: "Серафим", source: "HB", subraces: [] },
+                { name: "Сирена", source: "HB", subraces: [] },
+                { name: "Скарабеан", source: "HB", subraces: [] },
+                { name: "Скелетонец", source: "HB", subraces: [] },
+                { name: "Скорпионец", source: "HB", subraces: [] },
+                { name: "Сливер", source: "HB", subraces: [] },
+                { name: "Снежнорожденный", source: "HB", subraces: [] },
+                { name: "Согбенный", source: "HB", subraces: [] },
+                { name: "Созданный из тени", source: "HB", subraces: [] },
+                { name: "Солнечнорождённый", source: "HB", subraces: [] },
+                { name: "Спрайт", source: "HB / WBW", subraces: [] },
+                { name: "Сфинксокровный", source: "HB", subraces: [] },
+                { name: "Тануки", source: "HB:RGYR / HB", subraces: [] },
+                { name: "Тенерождённый", source: "HB", subraces: [] },
+                { name: "Техноид", source: "HB", subraces: [] },
+                { name: "Тлеющий призрак", source: "HB", subraces: [] },
+                { name: "Тотемник", source: "HB", subraces: [] },
+                { name: "Туманник", source: "HB", subraces: [] },
+                { name: "Ульм", source: "HB", subraces: [] },
+                { name: "Ундина", source: "HB", subraces: [] },
+                { name: "Фантомец", source: "HB", subraces: [] },
+                { name: "Фелис", source: "HB", subraces: [] },
+                { name: "Фоморианец", source: "HB", subraces: [] },
+                { name: "Халфдракон", source: "HB", subraces: [] },
+                { name: "Химераборн", source: "HB", subraces: [] },
+                { name: "Хоб", source: "HB", subraces: [] },
+                { name: "Хтонец", source: "HB", subraces: [] },
+                { name: "Циклопианец", source: "HB:HGMH / HB", subraces: [] },
+                { name: "Целестиал", source: "HB", subraces: [] },
+                { name: "Часовой", source: "HB", subraces: [] },
+                { name: "Человек", source: "PH14 / PS:A / HB", subraces: ["Вариант", "Обычный", "Каламаранский", "Иннистрадский", "Мидгардский", "Муэрский", "Нарский", "Шоу", "Тетирский", "Халруанский", "Калишитский", "Чондатанский", "Иллусканский", "Дамарский", "Рашеменский", "Турамийский", "Мулани"] },
+                { name: "Чейнджлинг", source: "RLW / MPMM", subraces: [] },
+                { name: "Чернильный", source: "HB", subraces: [] },
+                { name: "Шакалит", source: "HB", subraces: [] },
+                { name: "Шадар-кай", source: "MPMM", subraces: [] },
+                { name: "Шепчущий", source: "HB", subraces: [] },
+                { name: "Шифтер", source: "RLW / MPMM", subraces: ["Быстроногий", "Дикоклык", "Когтеброд", "Острозуб", "Сумеречный", "Длинношагий", "Ночеглазый", "Быстрокоготь", "Долгозуб", "Дикоступ", "Лесной"] },
+                { name: "Шторморождённый", source: "HB", subraces: [] },
+                { name: "Эладрин", source: "MPMM", subraces: ["Весна", "Лето", "Осень", "Зима", "Сумерки", "Рассвет", "Полдень"] },
+                { name: "Эльф", source: "PH14 / HB:MHH / HB", subraces: ["Высший", "Древесный", "Тёмный (дроу)", "Морской", "Астральный", "Шадар-кай", "Эладрин", "Палид", "Лунный", "Солнечный", "Звёздный", "Дикий", "Снежный", "Теневой", "Пустынный", "Небесный", "Коралловый", "Авариэль", "Груугаш", "Сильванести", "Квалинести"] },
+                { name: "Эфирный", source: "HB", subraces: [] },
+                { name: "Эхо-рождённый", source: "HB", subraces: [] },
+                { name: "Юки-онна", source: "HB:RGYR / HB", subraces: [] },
+                { name: "Энкох", source: "HB:RGYR / HB", subraces: [] },
+                { name: "Янтарный", source: "HB", subraces: [] },
+                { name: "Юань-ти", source: "VGM / MPMM", subraces: [] }
+            ],
+            classes: [
+                { name: "Варвар", source: "PHB", subclasses: ["Путь берсерка", "Путь тотемного воина", "Путь предков-защитников", "Путь бури", "Путь фанатика", "Путь дикого волшебства", "Путь зверя"] },
+                { name: "Бард", source: "PHB", subclasses: ["Коллегия знаний", "Коллегия храбрости", "Коллегия очарования", "Коллегия мечей", "Коллегия шёпотов", "Коллегия красноречия", "Коллегия созидания"] },
+                { name: "Жрец", source: "PHB", subclasses: ["Домен жизни", "Домен света", "Домен войны", "Домен обмана", "Домен знания", "Домен природы", "Домен бури", "Домен кузницы", "Домен смерти", "Домен могилы", "Домен порядка", "Домен мира", "Домен сумерек", "Мистический домен"] },
+                { name: "Друид", source: "PHB", subclasses: ["Круг земли", "Круг луны", "Круг снов", "Круг пастуха", "Круг спор", "Круг звёзд", "Круг дикого огня"] },
+                { name: "Воин", source: "PHB", subclasses: ["Чемпион", "Мастер боевых искусств", "Мистический рыцарь", "Мистический лучник", "Кавалерист", "Самурай", "Знаменосец", "Рыцарь рун", "Пси-воин"] },
+                { name: "Монах", source: "PHB", subclasses: ["Путь открытой ладони", "Путь тени", "Путь четырёх стихий", "Путь пьяного мастера", "Путь кенсэя", "Путь солнечной души", "Путь милосердия", "Путь астрального я"] },
+                { name: "Паладин", source: "PHB", subclasses: ["Клятва преданности", "Клятва древних", "Клятва мести", "Клятва короны", "Клятва искупления", "Клятва завоевания", "Клятва славы", "Клятва стражей"] },
+                { name: "Следопыт", source: "PHB", subclasses: ["Охотник", "Повелитель зверей", "Странник горизонта", "Сумрачный охотник", "Убийца чудовищ", "Хранитель роя", "Странник фей", "Хранитель дрейка"] },
+                { name: "Плут", source: "PHB", subclasses: ["Вор", "Убийца", "Мистический ловкач", "Авантюрист", "Главарь", "Инквизитив", "Разведчик", "Фантом", "Душенож"] },
+                { name: "Чародей", source: "PHB", subclasses: ["Дикая магия", "Наследие драконьей крови", "Божественная душа", "Теневая магия", "Штормовое колдовство", "Аберрантный разум", "Заводная душа"] },
+                { name: "Колдун", source: "PHB", subclasses: ["Исчадие", "Великий Древний", "Архифея", "Небожитель", "Проклятый клинок", "Бездонный", "Гений"] },
+                { name: "Волшебник", source: "PHB", subclasses: ["Школа ограждения", "Школа вызова", "Школа прорицания", "Школа очарования", "Школа иллюзии", "Школа некромантии", "Школа преобразования", "Школа воплощения", "Певец клинка", "Военная магия", "Орден писцов"] },
+                { name: "Изобретатель", source: "TCE / E:RftLW", subclasses: ["Алхимик", "Артиллерист", "Боевой кузнец", "Бронник"] }
+            ]
+        };
         const BASE_KNOWLEDGE = {
             weapons: [
             { name: "Дубинка", damageDice: "1к4", damageType: "Дробящий", properties: "Легкое", weaponType: "Простое" },
@@ -1927,6 +2346,104 @@
             KNOWLEDGE_BASE = merged;
         }
 
+        function populateRaceOptions() {
+            const select = document.querySelector("[data-character-race]");
+            if (!select) return;
+
+            const current = select.value;
+            const options = ['<option value="">Раса</option>']
+                .concat(
+                    CHARACTER_KNOWLEDGE.races.map(
+                        (item) => `<option value="${item.name}">${item.name}</option>`
+                    )
+                )
+                .join("");
+
+            select.innerHTML = options;
+            select.value = CHARACTER_KNOWLEDGE.races.some((item) => item.name === current) ? current : "";
+        }
+
+        function updateSubraceOptions() {
+            const raceSelect = document.querySelector("[data-character-race]");
+            const subraceSelect = document.querySelector("[data-character-subrace]");
+            const subraceWrap = document.querySelector("[data-subrace-wrap]");
+            if (!raceSelect || !subraceSelect || !subraceWrap) return;
+
+            const currentRace = raceSelect.value;
+            const currentSubrace = subraceSelect.value;
+            const raceData = CHARACTER_KNOWLEDGE.races.find((item) => item.name === currentRace);
+            const subraces = raceData ? raceData.subraces : [];
+
+            subraceSelect.innerHTML = ['<option value="">Подраса</option>']
+                .concat(subraces.map((name) => `<option value="${name}">${name}</option>`))
+                .join("");
+
+            subraceSelect.value = subraces.includes(currentSubrace) ? currentSubrace : "";
+            subraceWrap.classList.toggle("is-empty", !subraceSelect.value);
+            subraceSelect.disabled = !subraces.length;
+        }
+
+        function populateClassOptions() {
+            const select = document.querySelector("[data-character-class]");
+            if (!select) return;
+
+            const current = select.value;
+            const options = ['<option value="">Класс</option>']
+                .concat(
+                    CHARACTER_KNOWLEDGE.classes.map(
+                        (item) => `<option value="${item.name}">${item.name}</option>`
+                    )
+                )
+                .join("");
+
+            select.innerHTML = options;
+            select.value = CHARACTER_KNOWLEDGE.classes.some((item) => item.name === current) ? current : "";
+        }
+
+        function updateSubclassOptions() {
+            const classSelect = document.querySelector("[data-character-class]");
+            const subclassSelect = document.querySelector("[data-character-subclass]");
+            const subclassWrap = document.querySelector("[data-subclass-wrap]");
+            if (!classSelect || !subclassSelect || !subclassWrap) return;
+
+            const currentClass = classSelect.value;
+            const currentSubclass = subclassSelect.value;
+            const classData = CHARACTER_KNOWLEDGE.classes.find((item) => item.name === currentClass);
+            const subclasses = classData ? classData.subclasses : [];
+
+            subclassSelect.innerHTML = ['<option value="">Подкласс</option>']
+                .concat(subclasses.map((name) => `<option value="${name}">${name}</option>`))
+                .join("");
+
+            subclassSelect.value = subclasses.includes(currentSubclass) ? currentSubclass : "";
+            subclassWrap.classList.toggle("is-empty", !subclassSelect.value);
+            subclassSelect.disabled = !subclasses.length;
+        }
+
+        function updateExperienceDisplay() {
+            const levelInput = document.querySelector("[data-character-level]");
+            const experienceCurrent = document.querySelector("[data-experience-current]");
+            const experienceThreshold = document.querySelector("[data-experience-threshold]");
+            if (!levelInput || !experienceCurrent || !experienceThreshold) return;
+
+            const parsedLevel = Number.parseInt(levelInput.value, 10);
+            const safeLevel = Math.max(1, Math.min(20, Number.isNaN(parsedLevel) ? 1 : parsedLevel));
+            levelInput.value = String(safeLevel);
+
+            const parsedCurrent = Number.parseInt(experienceCurrent.value, 10);
+            const currentValue = Number.isNaN(parsedCurrent) || parsedCurrent < 0 ? 0 : parsedCurrent;
+            experienceCurrent.value = String(currentValue);
+            const threshold = EXPERIENCE_THRESHOLDS[safeLevel] || EXPERIENCE_THRESHOLDS[20];
+            experienceThreshold.textContent = String(threshold);
+        }
+
+        function sanitizeExperienceCurrent() {
+            const experienceCurrent = document.querySelector("[data-experience-current]");
+            if (!experienceCurrent) return;
+            const digits = experienceCurrent.value.replace(/[^\d]/g, "");
+            experienceCurrent.value = digits;
+        }
+
         function populateDataList(id, items) {
             let datalist = document.getElementById(id);
             if (!datalist) {
@@ -2116,6 +2633,10 @@
         document.addEventListener("input", (event) => {
             if (event.target.matches("[data-ability]")) {
                 updateDerivedValues();
+            } else if (event.target.matches("[data-character-level]")) {
+                updateExperienceDisplay();
+            } else if (event.target.matches("[data-experience-current]")) {
+                sanitizeExperienceCurrent();
             } else if (event.target.matches(".lookup-name")) {
                 const row = event.target.closest("[data-lookup-type]");
                 updateLookupRow(row);
@@ -2155,6 +2676,25 @@
 
             if (event.target.matches("[data-ability], .save-prof, .prof-radio")) {
                 updateDerivedValues();
+            } else if (event.target.matches("[data-character-race]")) {
+                updateSubraceOptions();
+            } else if (event.target.matches("[data-character-subrace]")) {
+                const subraceWrap = document.querySelector("[data-subrace-wrap]");
+                if (subraceWrap) {
+                    subraceWrap.classList.toggle("is-empty", !event.target.value);
+                }
+            } else if (event.target.matches("[data-character-class]")) {
+                updateSubclassOptions();
+            } else if (event.target.matches("[data-character-subclass]")) {
+                const subclassWrap = document.querySelector("[data-subclass-wrap]");
+                if (subclassWrap) {
+                    subclassWrap.classList.toggle("is-empty", !event.target.value);
+                }
+            } else if (event.target.matches("[data-character-level]")) {
+                updateExperienceDisplay();
+            } else if (event.target.matches("[data-experience-current]")) {
+                sanitizeExperienceCurrent();
+                updateExperienceDisplay();
             }
         });
 
@@ -2169,6 +2709,11 @@
 
         upgradeLookupFields();
         buildKnowledgeBase();
+        populateRaceOptions();
+        updateSubraceOptions();
+        populateClassOptions();
+        updateSubclassOptions();
+        updateExperienceDisplay();
         loadStoredPortrait();
         updateDerivedValues();
     </script>
