@@ -1,0 +1,2176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерактивный лист персонажа</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", "Roboto", sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px;
+            background: #7a6a5a;
+        }
+
+        .sheet {
+            width: min(1120px, 100%);
+            background: linear-gradient(145deg, #f8f2df 0%, #ece1cd 100%);
+            border: 3px solid #3e2c1c;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.45);
+            padding: 22px;
+            color: #2f2115;
+        }
+
+        .name-level-row {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .portrait-area {
+            width: 130px;
+            height: 160px;
+            border: 3px solid #3e2c1c;
+            background: linear-gradient(145deg, #d6c29b, #b9a17e);
+            box-shadow: inset 0 0 0 2px #fff8e7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #5b4a34;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 10px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .portrait-placeholder {
+            position: relative;
+            z-index: 1;
+        }
+
+        .portrait-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: linear-gradient(145deg, #d6c29b, #b9a17e);
+            display: none;
+        }
+
+        .portrait-area.has-image .portrait-image {
+            display: block;
+        }
+
+        .portrait-area.has-image .portrait-placeholder {
+            display: none;
+        }
+
+        .portrait-input {
+            display: none;
+        }
+
+        .portrait-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .portrait-clear {
+            border: 1px solid #3e2c1c;
+            background: #efe2c6;
+            color: #2f2115;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .name-fields {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .inline-fields {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .field-box,
+        .ability-box,
+        .combat-item,
+        .trait-field,
+        .magic-panel,
+        .footer-inventory {
+            border: 2px solid #3e2c1c;
+            background: #fffbf2;
+            box-shadow: inset 1px 1px 0 #c0b29a, inset -1px -1px 0 #c0b29a;
+        }
+
+        .field-box,
+        .combat-item,
+        .trait-field,
+        .footer-inventory,
+        .magic-panel {
+            padding: 10px 12px;
+        }
+
+        .field-label,
+        .combat-label,
+        .ability-name {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #3e2c1c;
+        }
+
+        .field-label {
+            border-bottom: 1px solid #b09e84;
+            padding-bottom: 2px;
+            margin-bottom: 6px;
+        }
+
+        .editable,
+        .editable-area,
+        .editable-inline,
+        .editable-number,
+        .skill-name-input,
+        .skill-bonus-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: inherit;
+            outline: none;
+        }
+
+        .editable {
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 1.2;
+            min-height: 2.2rem;
+        }
+
+        .editable-inline,
+        .editable-area,
+        .skill-name-input,
+        .skill-bonus-input {
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .editable-area {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .small-input {
+            font-size: 1rem;
+            font-weight: 500;
+            min-height: 1.6rem;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 198px minmax(0, 1fr);
+            gap: 18px;
+            align-items: stretch;
+            margin-bottom: 18px;
+        }
+
+        .abilities-column {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        .ability-box {
+            text-align: center;
+            padding: 10px 8px;
+        }
+
+        .ability-name {
+            border-bottom: 1px solid #3e2c1c;
+            padding-bottom: 5px;
+            margin-bottom: 8px;
+        }
+
+        .ability-score-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: inherit;
+            outline: none;
+        }
+
+        .ability-mod-input {
+            width: 100%;
+            margin-top: 8px;
+            border: 1px solid #3e2c1c;
+            background: #dccdb6;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 4px 6px;
+            outline: none;
+        }
+
+        .stats-and-skills {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            height: 100%;
+        }
+
+        .combat-groups {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .combat-group {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .combat-group.wide {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .combat-item {
+            min-height: 88px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .combat-number {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 1.9rem;
+            font-weight: 700;
+            line-height: 1.1;
+            outline: none;
+            color: inherit;
+        }
+
+        .combat-note {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 0.85rem;
+            color: inherit;
+            outline: none;
+            margin-top: 6px;
+        }
+
+        .skills-saves {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+            align-items: stretch;
+        }
+
+        .left-skills,
+        .right-skills {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: 100%;
+        }
+
+        .right-skills {
+            display: grid;
+            grid-template-rows: auto 1fr;
+        }
+
+        .skill-panel {
+            padding: 10px 12px;
+        }
+
+        .skill-row,
+        .save-row {
+            display: grid;
+            align-items: center;
+            padding: 4px 0;
+            border-bottom: 1px dotted #7f6e58;
+        }
+
+        .save-row {
+            grid-template-columns: 20px minmax(0, 1fr) 108px 58px;
+            gap: 8px;
+        }
+
+        .skill-row {
+            grid-template-columns: 8px minmax(0, 1fr) 108px 58px;
+            gap: 4px;
+        }
+
+        .skill-check {
+            width: 22px;
+            height: 22px;
+            accent-color: #3e2c1c;
+            justify-self: center;
+        }
+
+        .skill-name-input {
+            min-width: 0;
+            font-size: 0.95rem;
+        }
+
+        .skill-row .skill-name-input {
+            margin-left: -8px;
+        }
+
+        .skill-bonus-input {
+            text-align: right;
+            font-weight: 700;
+        }
+
+        .prof-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .prof-controls label {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .prof-radio {
+            accent-color: #3e2c1c;
+        }
+
+        .info-under-skills {
+            display: grid;
+            grid-template-columns: 180px minmax(0, 1fr);
+            gap: 12px;
+            align-items: stretch;
+            height: 100%;
+        }
+
+        .info-under-skills .field-box {
+            min-height: 100%;
+            height: 100%;
+        }
+
+        .info-under-skills .editable-area {
+            height: 100%;
+        }
+
+        .section-row-3 {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: auto;
+            align-self: end;
+            justify-content: stretch;
+            width: 100%;
+        }
+
+        .weapons-row,
+        .bottom-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .post-inventory-row {
+            margin-top: 16px;
+        }
+
+        .lookup-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .gear-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .gear-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .coin-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .coin-box {
+            border: 1px solid #b09e84;
+            background: #f9f2e4;
+            padding: 8px;
+        }
+
+        .lookup-row {
+            border: 1px solid #b09e84;
+            background: #f9f2e4;
+            padding: 8px;
+        }
+
+        .lookup-filters {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .lookup-select {
+            width: 100%;
+            border: 1px solid #b09e84;
+            background: #fffaf0;
+            color: inherit;
+            padding: 4px 6px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .lookup-name {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid #b09e84;
+            background: transparent;
+            padding: 2px 0 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: inherit;
+            outline: none;
+        }
+
+        .lookup-hint {
+            font-size: 0.72rem;
+            color: #6f5a44;
+            margin-top: 4px;
+        }
+
+        .lookup-meta {
+            margin-top: 6px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .lookup-field {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .lookup-field-label {
+            display: block;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            color: #6f5a44;
+            margin-bottom: 2px;
+        }
+
+        .lookup-field-value {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 0.92rem;
+            line-height: 1.25;
+            color: inherit;
+            outline: none;
+            min-width: 0;
+        }
+
+        .lookup-field-area {
+            resize: none;
+            overflow: hidden;
+            min-height: 2.4em;
+            padding: 0;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .lookup-row[data-lookup-type="weapon"] .lookup-field.field-properties,
+        .lookup-row[data-lookup-type="spell"] .lookup-field.field-classes,
+        .lookup-row[data-lookup-type="spell"] .lookup-field.field-effect,
+        .lookup-row[data-lookup-type="armor"] .lookup-field.field-notes,
+        .lookup-row[data-lookup-type="equipment"] .lookup-field.field-notes {
+            grid-column: 1 / -1;
+        }
+
+        .spell-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 25px;
+            border-bottom: 2px solid #3e2c1c;
+            padding-bottom: 6px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .traits-section {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin: 0 0 10px;
+        }
+
+        .trait-field {
+            min-height: 110px;
+        }
+
+        .footer-note {
+            margin-top: 12px;
+            padding: 8px 10px;
+            border: 1px solid #3e2c1c;
+            background: #f5e6d3;
+            font-size: 0.9rem;
+            grid-column: 1 / -1;
+        }
+
+        hr {
+            border: 1px solid #3e2c1c;
+            margin: 16px 0;
+        }
+
+        @media (max-width: 920px) {
+            body {
+                padding: 18px;
+            }
+
+            .sheet {
+                width: 100%;
+                padding: 18px;
+            }
+
+            .main-layout,
+            .skills-saves,
+            .info-under-skills,
+            .section-row-3,
+            .traits-section,
+            .bottom-row,
+            .combat-groups,
+            .weapons-row,
+            .inline-fields {
+                grid-template-columns: 1fr;
+            }
+
+            .combat-group,
+            .combat-group.wide {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .name-level-row {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .portrait-wrapper {
+                width: 100%;
+            }
+
+            .portrait-area {
+                width: 100%;
+                height: 180px;
+            }
+
+            .combat-groups,
+            .combat-group,
+            .combat-group.wide,
+            .gear-grid,
+            .lookup-meta,
+            .lookup-filters {
+                gap: 10px;
+            }
+
+            .field-box,
+            .combat-item,
+            .trait-field,
+            .magic-panel,
+            .footer-inventory,
+            .lookup-row {
+                padding: 12px;
+            }
+
+            .lookup-name,
+            .lookup-select,
+            .editable-inline,
+            .editable-area,
+            .skill-name-input,
+            .skill-bonus-input,
+            .combat-note,
+            .lookup-field-value {
+                font-size: 0.98rem;
+            }
+
+            .coin-box {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 10px;
+            }
+
+            .sheet {
+                padding: 12px;
+                border-width: 2px;
+            }
+
+            .inline-fields,
+            .combat-group,
+            .combat-group.wide,
+            .weapons-row,
+            .gear-grid,
+            .coin-grid,
+            .lookup-filters,
+            .lookup-meta,
+            .section-row-3,
+            .traits-section {
+                grid-template-columns: 1fr;
+            }
+
+            .main-layout {
+                gap: 12px;
+            }
+
+            .abilities-column {
+                gap: 8px;
+            }
+
+            .ability-box {
+                padding: 8px 10px;
+            }
+
+            .ability-score-input {
+                font-size: 1.8rem;
+            }
+
+            .ability-mod-input {
+                font-size: 1rem;
+            }
+
+            .combat-item {
+                min-height: 78px;
+            }
+
+            .save-row {
+                grid-template-columns: 20px minmax(0, 1fr) 82px 52px;
+                gap: 6px;
+            }
+
+            .skill-row {
+                grid-template-columns: 8px minmax(0, 1fr) 82px 52px;
+                gap: 4px;
+            }
+
+            .skill-name-input,
+            .save-row .editable-inline {
+                font-size: 0.9rem;
+            }
+
+            .prof-controls {
+                gap: 6px;
+                font-size: 0.78rem;
+            }
+
+            .skill-check {
+                width: 20px;
+                height: 20px;
+            }
+
+            .lookup-row {
+                padding: 10px;
+            }
+
+            .lookup-name {
+                padding-bottom: 8px;
+                font-size: 0.95rem;
+            }
+
+            .lookup-field-label {
+                font-size: 0.66rem;
+            }
+
+            .lookup-field-value,
+            .lookup-field-area {
+                font-size: 0.9rem;
+            }
+
+            .info-under-skills {
+                gap: 10px;
+            }
+
+            .portrait-area {
+                height: 210px;
+            }
+
+            .portrait-clear {
+                width: 100%;
+                min-height: 42px;
+                font-size: 0.9rem;
+            }
+
+            .editable-area {
+                min-height: 110px;
+            }
+
+            .post-inventory-row {
+                margin-top: 12px;
+            }
+
+            hr {
+                margin: 12px 0;
+            }
+        }
+
+        @media (max-width: 420px) {
+            body {
+                padding: 6px;
+            }
+
+            .sheet {
+                padding: 10px;
+            }
+
+            .field-label,
+            .combat-label,
+            .ability-name {
+                font-size: 0.68rem;
+            }
+
+            .editable {
+                font-size: 1.2rem;
+            }
+
+            .portrait-area {
+                height: 180px;
+            }
+
+            .save-row {
+                grid-template-columns: 18px minmax(0, 1fr) 74px 46px;
+                gap: 4px;
+            }
+
+            .skill-row {
+                grid-template-columns: 8px minmax(0, 1fr) 74px 46px;
+                gap: 3px;
+            }
+
+            .prof-controls {
+                gap: 4px;
+                font-size: 0.7rem;
+            }
+
+            .lookup-name,
+            .lookup-select,
+            .editable-inline,
+            .skill-name-input,
+            .skill-bonus-input,
+            .lookup-field-value,
+            .lookup-field-area {
+                font-size: 0.86rem;
+            }
+
+            .combat-number {
+                font-size: 1.45rem;
+            }
+
+            .combat-note {
+                font-size: 0.8rem;
+            }
+        }
+
+        @page {
+            size: A4 landscape;
+            margin: 6mm;
+        }
+
+        @media print {
+            html,
+            body {
+                width: 100%;
+                min-height: auto;
+                background: #ffffff !important;
+                margin: 0;
+                padding: 0;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            body {
+                display: block;
+            }
+
+            .sheet {
+                width: 100%;
+                max-width: none;
+                border: 2px solid #3e2c1c;
+                box-shadow: none;
+                padding: 7px;
+                background: #f8f2df !important;
+            }
+
+            .field-box,
+            .ability-box,
+            .combat-item,
+            .trait-field,
+            .magic-panel,
+            .footer-inventory,
+            .lookup-row,
+            .coin-box {
+                box-shadow: none;
+                break-inside: auto;
+                page-break-inside: auto;
+            }
+
+            .name-level-row,
+            .main-layout,
+            .skills-saves,
+            .info-under-skills,
+            .weapons-row,
+            .gear-grid,
+            .coin-grid,
+            .combat-groups,
+            .combat-group,
+            .combat-group.wide,
+            .lookup-meta,
+            .lookup-filters,
+            .section-row-3,
+            .bottom-row {
+                break-inside: auto;
+                page-break-inside: auto;
+            }
+
+            .portrait-clear,
+            .portrait-input,
+            .lookup-hint {
+                display: none !important;
+            }
+
+            .name-level-row,
+            .inline-fields,
+            .combat-groups,
+            .skills-saves,
+            .traits-section,
+            .weapons-row,
+            .gear-grid,
+            .coin-grid,
+            .bottom-row {
+                page-break-before: auto;
+                page-break-after: auto;
+            }
+
+            .name-level-row {
+                margin-bottom: 8px;
+            }
+
+            .main-layout {
+                gap: 8px;
+                margin-bottom: 8px;
+            }
+
+            .abilities-column,
+            .stats-and-skills,
+            .left-skills,
+            .right-skills,
+            .lookup-panel,
+            .gear-panel {
+                gap: 5px;
+            }
+
+            .inline-fields,
+            .skills-saves,
+            .traits-section,
+            .weapons-row,
+            .gear-grid,
+            .coin-grid,
+            .combat-groups,
+            .combat-group,
+            .combat-group.wide,
+            .lookup-meta,
+            .lookup-filters,
+            .section-row-3,
+            .bottom-row {
+                gap: 5px;
+            }
+
+            .field-box,
+            .combat-item,
+            .trait-field,
+            .footer-inventory,
+            .magic-panel,
+            .lookup-row,
+            .coin-box {
+                padding: 5px 6px;
+            }
+
+            .portrait-area {
+                width: 96px;
+                height: 118px;
+                box-shadow: none;
+            }
+
+            .editable,
+            .ability-score-input,
+            .combat-number {
+                font-size: 1.12rem;
+            }
+
+            .editable-inline,
+            .editable-area,
+            .skill-name-input,
+            .skill-bonus-input,
+            .lookup-name,
+            .lookup-field-value,
+            .combat-note {
+                font-size: 0.72rem;
+                line-height: 1.08;
+            }
+
+            .field-label,
+            .combat-label,
+            .ability-name,
+            .lookup-field-label {
+                font-size: 0.54rem;
+            }
+
+            .ability-box {
+                padding: 6px 4px;
+            }
+
+            .ability-mod-input {
+                font-size: 0.82rem;
+                margin-top: 4px;
+                padding: 2px 3px;
+            }
+
+            .combat-item {
+                min-height: 54px;
+            }
+
+            .skill-row {
+                grid-template-columns: 8px minmax(0, 1fr) 72px 44px;
+                gap: 2px;
+                padding: 2px 0;
+            }
+
+            .save-row {
+                grid-template-columns: 16px minmax(0, 1fr) 72px 44px;
+                gap: 4px;
+                padding: 2px 0;
+            }
+
+            .prof-controls {
+                gap: 3px;
+                font-size: 0.62rem;
+            }
+
+            .lookup-field-area,
+            .editable-area {
+                min-height: 1.65em;
+            }
+
+            hr {
+                margin: 6px 0;
+            }
+
+            .inline-fields {
+                gap: 4px;
+            }
+
+            .combat-groups,
+            .combat-group,
+            .combat-group.wide {
+                gap: 4px;
+            }
+
+            .gear-grid,
+            .weapons-row {
+                gap: 6px;
+            }
+
+            .coin-grid {
+                gap: 4px;
+            }
+
+            .field-label {
+                margin-bottom: 3px;
+                padding-bottom: 1px;
+            }
+
+            .lookup-filters {
+                margin-bottom: 4px;
+            }
+
+            .lookup-meta {
+                margin-top: 4px;
+            }
+
+            .lookup-hint {
+                display: none !important;
+            }
+
+            .traits-section,
+            .footer-inventory,
+            .field-box[style*="margin-bottom: 12px"],
+            .field-box[style*="margin: 12px 0"] {
+                break-inside: auto;
+                page-break-inside: auto;
+            }
+
+            .ability-box,
+            .combat-item,
+            .coin-box {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            .editable-area {
+                resize: none;
+                overflow: visible;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sheet">
+        <div class="name-level-row">
+            <div class="portrait-wrapper">
+                <label class="portrait-area">
+                    <span class="portrait-placeholder">[ ПОРТРЕТ<br>ПЕРСОНАЖА ]</span>
+                    <img class="portrait-image" alt="Портрет персонажа">
+                    <input class="portrait-input" type="file" accept="image/*">
+                </label>
+                <button class="portrait-clear" type="button">Очистить портрет</button>
+            </div>
+            <div class="name-fields">
+                <div class="field-box" style="padding: 12px;">
+                    <div class="field-label">Имя персонажа</div>
+                    <input class="editable" type="text" value="">
+                </div>
+                <div class="inline-fields">
+                    <div class="field-box">
+                        <div class="field-label">Раса</div>
+                        <input class="editable-inline small-input" type="text" value="">
+                    </div>
+                    <div class="field-box">
+                        <div class="field-label">Класс и уровень</div>
+                        <input class="editable-inline small-input" type="text" value="">
+                    </div>
+                    <div class="field-box">
+                        <div class="field-label">Опыт</div>
+                        <input class="editable-inline small-input" type="text" value="">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-layout">
+            <div class="abilities-column">
+                <div class="ability-box">
+                    <div class="ability-name">Сила</div>
+                    <input class="ability-score-input" type="number" value="0" data-ability="str">
+                    <input class="ability-mod-input" type="text" value="-5" data-ability-mod="str" readonly>
+                </div>
+                <div class="ability-box">
+                    <div class="ability-name">Ловкость</div>
+                    <input class="ability-score-input" type="number" value="0" data-ability="dex">
+                    <input class="ability-mod-input" type="text" value="-5" data-ability-mod="dex" readonly>
+                </div>
+                <div class="ability-box">
+                    <div class="ability-name">Телосложение</div>
+                    <input class="ability-score-input" type="number" value="0" data-ability="con">
+                    <input class="ability-mod-input" type="text" value="-5" data-ability-mod="con" readonly>
+                </div>
+                <div class="ability-box">
+                    <div class="ability-name">Интеллект</div>
+                    <input class="ability-score-input" type="number" value="0" data-ability="int">
+                    <input class="ability-mod-input" type="text" value="-5" data-ability-mod="int" readonly>
+                </div>
+                <div class="ability-box">
+                    <div class="ability-name">Мудрость</div>
+                    <input class="ability-score-input" type="number" value="0" data-ability="wis">
+                    <input class="ability-mod-input" type="text" value="-5" data-ability-mod="wis" readonly>
+                </div>
+                <div class="ability-box">
+                    <div class="ability-name">Харизма</div>
+                    <input class="ability-score-input" type="number" value="0" data-ability="cha">
+                    <input class="ability-mod-input" type="text" value="-5" data-ability-mod="cha" readonly>
+                </div>
+            </div>
+
+            <div class="stats-and-skills">
+                <div class="combat-groups">
+                    <div class="combat-group">
+                        <div class="combat-item">
+                            <span class="combat-label">Класс брони</span>
+                            <input class="combat-number" type="text" value="">
+                        </div>
+                        <div class="combat-item">
+                            <span class="combat-label">Инициатива</span>
+                            <input class="combat-number" type="text" value="-5" data-initiative-output readonly>
+                        </div>
+                        <div class="combat-item">
+                            <span class="combat-label">Бонус мастерства</span>
+                            <input class="combat-number" type="text" value="">
+                        </div>
+                    </div>
+                    <div class="combat-group wide">
+                        <div class="combat-item">
+                            <span class="combat-label">Скорость</span>
+                            <input class="combat-number" type="text" value="">
+                        </div>
+                        <div class="combat-item">
+                            <span class="combat-label">Хиты</span>
+                            <input class="combat-number" type="text" value="">
+                            <input class="combat-note" type="text" value="">
+                        </div>
+                        <div class="combat-item">
+                            <span class="combat-label">Кость хитов</span>
+                            <input class="combat-number" type="text" value="">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skills-saves">
+                    <div class="left-skills">
+                        <div class="field-box skill-panel">
+                            <div class="field-label">Спасброски</div>
+                            <label class="save-row"><input class="skill-check save-prof" type="checkbox" data-ability-ref="str"><input class="skill-name-input" type="text" value="Сила"><span></span><input class="skill-bonus-input" type="text" data-save-output="str" readonly></label>
+                            <label class="save-row"><input class="skill-check save-prof" type="checkbox" data-ability-ref="dex"><input class="skill-name-input" type="text" value="Ловкость"><span></span><input class="skill-bonus-input" type="text" data-save-output="dex" readonly></label>
+                            <label class="save-row"><input class="skill-check save-prof" type="checkbox" data-ability-ref="con"><input class="skill-name-input" type="text" value="Телосложение"><span></span><input class="skill-bonus-input" type="text" data-save-output="con" readonly></label>
+                            <label class="save-row"><input class="skill-check save-prof" type="checkbox" data-ability-ref="int"><input class="skill-name-input" type="text" value="Интеллект"><span></span><input class="skill-bonus-input" type="text" data-save-output="int" readonly></label>
+                            <label class="save-row"><input class="skill-check save-prof" type="checkbox" data-ability-ref="wis"><input class="skill-name-input" type="text" value="Мудрость"><span></span><input class="skill-bonus-input" type="text" data-save-output="wis" readonly></label>
+                            <label class="save-row"><input class="skill-check save-prof" type="checkbox" data-ability-ref="cha"><input class="skill-name-input" type="text" value="Харизма"><span></span><input class="skill-bonus-input" type="text" data-save-output="cha" readonly></label>
+                        </div>
+
+                        <div class="field-box skill-panel">
+                            <div class="field-label">Навыки</div>
+                            <div class="skill-row" data-skill-ability="str" data-skill-name="skill-left-1"><span></span><input class="skill-name-input" type="text" value="Атлетика (Сил)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-left-1" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-left-1" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="dex" data-skill-name="skill-left-2"><span></span><input class="skill-name-input" type="text" value="Акробатика (Лов)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-left-2" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-left-2" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="dex" data-skill-name="skill-left-3"><span></span><input class="skill-name-input" type="text" value="Ловкость рук (Лов)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-left-3" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-left-3" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="dex" data-skill-name="skill-left-4"><span></span><input class="skill-name-input" type="text" value="Скрытность (Лов)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-left-4" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-left-4" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="int" data-skill-name="skill-left-5"><span></span><input class="skill-name-input" type="text" value="Анализ (Инт)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-left-5" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-left-5" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="int" data-skill-name="skill-left-6"><span></span><input class="skill-name-input" type="text" value="История (Инт)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-left-6" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-left-6" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="int" data-skill-name="skill-left-7"><span></span><input class="skill-name-input" type="text" value="Магия (Инт)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-left-7" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-left-7" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="int" data-skill-name="skill-left-8"><span></span><input class="skill-name-input" type="text" value="Природа (Инт)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-left-8" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-left-8" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                        </div>
+                    </div>
+
+                    <div class="right-skills">
+                        <div class="field-box skill-panel">
+                            <div class="field-label">Навыки</div>
+                            <div class="skill-row" data-skill-ability="int" data-skill-name="skill-right-1"><span></span><input class="skill-name-input" type="text" value="Религия (Инт)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-1" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-1" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="wis" data-skill-name="skill-right-2"><span></span><input class="skill-name-input" type="text" value="Восприятие (Муд)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-2" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-2" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="wis" data-skill-name="skill-right-3"><span></span><input class="skill-name-input" type="text" value="Выживание (Муд)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-3" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-3" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="wis" data-skill-name="skill-right-4"><span></span><input class="skill-name-input" type="text" value="Медицина (Муд)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-4" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-4" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="wis" data-skill-name="skill-right-5"><span></span><input class="skill-name-input" type="text" value="Проницательность (Муд)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-5" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-5" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="wis" data-skill-name="skill-right-6"><span></span><input class="skill-name-input" type="text" value="Уход за животными (Муд)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-6" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-6" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="cha" data-skill-name="skill-right-7"><span></span><input class="skill-name-input" type="text" value="Выступление (Хар)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-7" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-7" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="cha" data-skill-name="skill-right-8"><span></span><input class="skill-name-input" type="text" value="Запугивание (Хар)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-8" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-8" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="cha" data-skill-name="skill-right-9"><span></span><input class="skill-name-input" type="text" value="Обман (Хар)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-9" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-9" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="cha" data-skill-name="skill-right-10"><span></span><input class="skill-name-input" type="text" value="Убеждение (Хар)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-10" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-10" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                        </div>
+
+                        <div class="info-under-skills">
+                            <div class="field-box">
+                                <div class="field-label">Возраст</div>
+                                <input class="editable-inline small-input" type="text" value="">
+                            </div>
+                            <div class="field-box">
+                                <div class="field-label">Предыстория / мировоззрение</div>
+                                <textarea class="editable-area"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="traits-section">
+                    <div class="trait-field">
+                        <div class="field-label">Черты личности</div>
+                        <textarea class="editable-area"></textarea>
+                    </div>
+                    <div class="trait-field">
+                        <div class="field-label">Идеалы</div>
+                        <textarea class="editable-area"></textarea>
+                    </div>
+                    <div class="trait-field">
+                        <div class="field-label">Привязанности</div>
+                        <textarea class="editable-area"></textarea>
+                    </div>
+                    <div class="trait-field">
+                        <div class="field-label">Слабости</div>
+                        <textarea class="editable-area"></textarea>
+                    </div>
+                </div>
+
+                <div class="section-row-3">
+                    <div class="field-box">
+                        <div class="field-label">Вдохновение</div>
+                        <input class="editable-inline small-input" type="text" value="">
+                    </div>
+                    <div class="field-box">
+                        <div class="field-label">Пасс. восприятие</div>
+                        <input class="editable-inline small-input" type="text" value="5" data-passive-output="Восприятие" readonly>
+                    </div>
+                    <div class="field-box">
+                        <div class="field-label">Пасс. проницательность</div>
+                        <input class="editable-inline small-input" type="text" value="5" data-passive-output="Проницательность" readonly>
+                    </div>
+                    <div class="field-box">
+                        <div class="field-label">Пасс. анализ</div>
+                        <input class="editable-inline small-input" type="text" value="5" data-passive-output="Анализ" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="field-box" style="margin: 12px 0;">
+            <div class="field-label">Языки, сопротивления, владения</div>
+            <textarea class="editable-area"></textarea>
+        </div>
+
+        <div class="footer-inventory">
+            <div class="field-label">Снаряжение и заметки</div>
+            <textarea class="editable-area" style="min-height: 120px;"></textarea>
+        </div>
+
+        <div class="weapons-row post-inventory-row">
+            <div class="field-box">
+                <div class="field-label">Оружие</div>
+                <div class="lookup-panel">
+                    <div class="lookup-row" data-lookup-type="weapon">
+                        <div class="lookup-filters">
+                            <select class="lookup-select" data-filter="weaponType">
+                                <option value="">Любой тип</option>
+                                <option value="Простое">Простое</option>
+                                <option value="Воинское">Воинское</option>
+                            </select>
+                            <select class="lookup-select" data-filter="damageType">
+                                <option value="">Любой урон</option>
+                                <option value="Рубящий">Рубящий</option>
+                                <option value="Колющий">Колющий</option>
+                                <option value="Дробящий">Дробящий</option>
+                            </select>
+                        </div>
+                        <input class="lookup-name" type="text" value="" placeholder="Название оружия" list="weapon-list-0">
+                        <div class="lookup-meta">
+                            <div class="lookup-field"><span class="lookup-field-label">Кость урона</span><input class="lookup-field-value" type="text" data-field="damageDice" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Тип урона</span><input class="lookup-field-value" type="text" data-field="damageType" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Свойства</span><input class="lookup-field-value" type="text" data-field="properties" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Тип оружия</span><input class="lookup-field-value" type="text" data-field="weaponType" readonly></div>
+                        </div>
+                    </div>
+                    <div class="lookup-row" data-lookup-type="weapon">
+                        <div class="lookup-filters">
+                            <select class="lookup-select" data-filter="weaponType">
+                                <option value="">Любой тип</option>
+                                <option value="Простое">Простое</option>
+                                <option value="Воинское">Воинское</option>
+                            </select>
+                            <select class="lookup-select" data-filter="damageType">
+                                <option value="">Любой урон</option>
+                                <option value="Рубящий">Рубящий</option>
+                                <option value="Колющий">Колющий</option>
+                                <option value="Дробящий">Дробящий</option>
+                            </select>
+                        </div>
+                        <input class="lookup-name" type="text" value="" placeholder="Название оружия" list="weapon-list-1">
+                        <div class="lookup-meta">
+                            <div class="lookup-field"><span class="lookup-field-label">Кость урона</span><input class="lookup-field-value" type="text" data-field="damageDice" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Тип урона</span><input class="lookup-field-value" type="text" data-field="damageType" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Свойства</span><input class="lookup-field-value" type="text" data-field="properties" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Тип оружия</span><input class="lookup-field-value" type="text" data-field="weaponType" readonly></div>
+                        </div>
+                    </div>
+                    <div class="lookup-row" data-lookup-type="weapon">
+                        <div class="lookup-filters">
+                            <select class="lookup-select" data-filter="weaponType">
+                                <option value="">Любой тип</option>
+                                <option value="Простое">Простое</option>
+                                <option value="Воинское">Воинское</option>
+                            </select>
+                            <select class="lookup-select" data-filter="damageType">
+                                <option value="">Любой урон</option>
+                                <option value="Рубящий">Рубящий</option>
+                                <option value="Колющий">Колющий</option>
+                                <option value="Дробящий">Дробящий</option>
+                            </select>
+                        </div>
+                        <input class="lookup-name" type="text" value="" placeholder="Название оружия" list="weapon-list-2">
+                        <div class="lookup-meta">
+                            <div class="lookup-field"><span class="lookup-field-label">Кость урона</span><input class="lookup-field-value" type="text" data-field="damageDice" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Тип урона</span><input class="lookup-field-value" type="text" data-field="damageType" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Свойства</span><input class="lookup-field-value" type="text" data-field="properties" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Тип оружия</span><input class="lookup-field-value" type="text" data-field="weaponType" readonly></div>
+                        </div>
+                    </div>
+                    <div class="lookup-row" data-lookup-type="armor">
+                        <div class="lookup-filters">
+                            <select class="lookup-select" data-filter="armorType">
+                                <option value="">Любой тип</option>
+                                <option value="Щит">Щит</option>
+                            </select>
+                            <select class="lookup-select" data-filter="stealth">
+                                <option value="">Любая скрытность</option>
+                                <option value="Без помехи">Без помехи</option>
+                                <option value="Помеха">Помеха</option>
+                            </select>
+                        </div>
+                        <input class="lookup-name" type="text" value="" placeholder="Название щита" list="armor-list-3">
+                        <div class="lookup-meta">
+                            <div class="lookup-field"><span class="lookup-field-label">КД</span><input class="lookup-field-value" type="text" data-field="armorClass" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Тип</span><input class="lookup-field-value" type="text" data-field="armorType" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Скрытность</span><input class="lookup-field-value" type="text" data-field="stealth" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Примечание</span><input class="lookup-field-value" type="text" data-field="notes" readonly></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="field-box">
+                <div class="field-label">Заклинания</div>
+                <div class="lookup-panel">
+                    <div class="lookup-row" data-lookup-type="spell">
+                        <div class="lookup-filters">
+                            <select class="lookup-select" data-filter="levelType">
+                                <option value="">Любой круг</option>
+                                <option value="Заговор">Заговор</option>
+                                <option value="1 круг">1 круг</option>
+                                <option value="2 круг">2 круг</option>
+                                <option value="3 круг">3 круг</option>
+                                <option value="4 круг">4 круг</option>
+                                <option value="5 круг">5 круг</option>
+                                <option value="6 круг">6 круг</option>
+                                <option value="7 круг">7 круг</option>
+                                <option value="8 круг">8 круг</option>
+                                <option value="9 круг">9 круг</option>
+                            </select>
+                            <select class="lookup-select" data-filter="class">
+                                <option value="">Любой класс</option>
+                                <option value="Бард">Бард</option>
+                                <option value="Жрец">Жрец</option>
+                                <option value="Друид">Друид</option>
+                                <option value="Паладин">Паладин</option>
+                                <option value="Следопыт">Следопыт</option>
+                                <option value="Колдун">Колдун</option>
+                                <option value="Волшебник">Волшебник</option>
+                                <option value="Чародей">Чародей</option>
+                                <option value="Изобретатель">Изобретатель</option>
+                            </select>
+                        </div>
+                        <input class="lookup-name" type="text" value="" placeholder="Название заклинания" list="spell-list-0">
+                        <div class="lookup-meta">
+                            <div class="lookup-field"><span class="lookup-field-label">Круг</span><input class="lookup-field-value" type="text" data-field="levelType" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Классы</span><input class="lookup-field-value" type="text" data-field="classes" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Спасбросок</span><input class="lookup-field-value" type="text" data-field="save" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Тип урона</span><input class="lookup-field-value" type="text" data-field="damageType" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Эффект</span><input class="lookup-field-value" type="text" data-field="effect" readonly></div>
+                        </div>
+                    </div>
+                    <div class="lookup-row" data-lookup-type="spell">
+                        <div class="lookup-filters">
+                            <select class="lookup-select" data-filter="levelType">
+                                <option value="">Любой круг</option>
+                                <option value="Заговор">Заговор</option>
+                                <option value="1 круг">1 круг</option>
+                                <option value="2 круг">2 круг</option>
+                                <option value="3 круг">3 круг</option>
+                                <option value="4 круг">4 круг</option>
+                                <option value="5 круг">5 круг</option>
+                                <option value="6 круг">6 круг</option>
+                                <option value="7 круг">7 круг</option>
+                                <option value="8 круг">8 круг</option>
+                                <option value="9 круг">9 круг</option>
+                            </select>
+                            <select class="lookup-select" data-filter="class">
+                                <option value="">Любой класс</option>
+                                <option value="Бард">Бард</option>
+                                <option value="Жрец">Жрец</option>
+                                <option value="Друид">Друид</option>
+                                <option value="Паладин">Паладин</option>
+                                <option value="Следопыт">Следопыт</option>
+                                <option value="Колдун">Колдун</option>
+                                <option value="Волшебник">Волшебник</option>
+                                <option value="Чародей">Чародей</option>
+                                <option value="Изобретатель">Изобретатель</option>
+                            </select>
+                        </div>
+                        <input class="lookup-name" type="text" value="" placeholder="Название заклинания" list="spell-list-1">
+                        <div class="lookup-meta">
+                            <div class="lookup-field"><span class="lookup-field-label">Круг</span><input class="lookup-field-value" type="text" data-field="levelType" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Классы</span><input class="lookup-field-value" type="text" data-field="classes" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Спасбросок</span><input class="lookup-field-value" type="text" data-field="save" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Тип урона</span><input class="lookup-field-value" type="text" data-field="damageType" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Эффект</span><input class="lookup-field-value" type="text" data-field="effect" readonly></div>
+                        </div>
+                    </div>
+                    <div class="lookup-row" data-lookup-type="spell">
+                        <div class="lookup-filters">
+                            <select class="lookup-select" data-filter="levelType">
+                                <option value="">Любой круг</option>
+                                <option value="Заговор">Заговор</option>
+                                <option value="1 круг">1 круг</option>
+                                <option value="2 круг">2 круг</option>
+                                <option value="3 круг">3 круг</option>
+                                <option value="4 круг">4 круг</option>
+                                <option value="5 круг">5 круг</option>
+                                <option value="6 круг">6 круг</option>
+                                <option value="7 круг">7 круг</option>
+                                <option value="8 круг">8 круг</option>
+                                <option value="9 круг">9 круг</option>
+                            </select>
+                            <select class="lookup-select" data-filter="class">
+                                <option value="">Любой класс</option>
+                                <option value="Бард">Бард</option>
+                                <option value="Жрец">Жрец</option>
+                                <option value="Друид">Друид</option>
+                                <option value="Паладин">Паладин</option>
+                                <option value="Следопыт">Следопыт</option>
+                                <option value="Колдун">Колдун</option>
+                                <option value="Волшебник">Волшебник</option>
+                                <option value="Чародей">Чародей</option>
+                                <option value="Изобретатель">Изобретатель</option>
+                            </select>
+                        </div>
+                        <input class="lookup-name" type="text" value="" placeholder="Название заклинания" list="spell-list-2">
+                        <div class="lookup-meta">
+                            <div class="lookup-field"><span class="lookup-field-label">Круг</span><input class="lookup-field-value" type="text" data-field="levelType" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Классы</span><input class="lookup-field-value" type="text" data-field="classes" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Спасбросок</span><input class="lookup-field-value" type="text" data-field="save" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Тип урона</span><input class="lookup-field-value" type="text" data-field="damageType" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Эффект</span><input class="lookup-field-value" type="text" data-field="effect" readonly></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="field-box" style="margin-bottom: 12px;">
+            <div class="field-label">Снаряжение</div>
+            <div class="gear-panel">
+                <div class="gear-grid">
+                    <div class="lookup-row" data-lookup-type="armor">
+                        <div class="lookup-filters">
+                            <select class="lookup-select" data-filter="armorType">
+                                <option value="">Любой тип</option>
+                                <option value="Легкий">Легкий</option>
+                                <option value="Средний">Средний</option>
+                                <option value="Тяжелый">Тяжелый</option>
+                                <option value="Щит">Щит</option>
+                            </select>
+                            <select class="lookup-select" data-filter="stealth">
+                                <option value="">Любая скрытность</option>
+                                <option value="Без помехи">Без помехи</option>
+                                <option value="Помеха">Помеха</option>
+                            </select>
+                        </div>
+                        <input class="lookup-name" type="text" value="" placeholder="Название доспеха" list="armor-list-4">
+                        <div class="lookup-hint">Начни вводить название доспеха или щита, затем выбери вариант из подсказки.</div>
+                        <div class="lookup-meta">
+                            <div class="lookup-field"><span class="lookup-field-label">КД</span><input class="lookup-field-value" type="text" data-field="armorClass" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Тип</span><input class="lookup-field-value" type="text" data-field="armorType" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Скрытность</span><input class="lookup-field-value" type="text" data-field="stealth" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Примечание</span><input class="lookup-field-value" type="text" data-field="notes" readonly></div>
+                        </div>
+                    </div>
+                    <div class="lookup-row" data-lookup-type="equipment">
+                        <div class="lookup-filters">
+                            <select class="lookup-select" data-filter="itemType">
+                                <option value="">Любой набор</option>
+                                <option value="Набор">Набор</option>
+                                <option value="Снаряжение">Снаряжение</option>
+                            </select>
+                            <select class="lookup-select" data-filter="tag">
+                                <option value="">Любая категория</option>
+                                <option value="Стартовый набор">Стартовый набор</option>
+                                <option value="PHB">PHB</option>
+                                <option value="CoS">CoS</option>
+                            </select>
+                        </div>
+                        <input class="lookup-name" type="text" value="" placeholder="Название набора" list="equipment-list-5">
+                        <div class="lookup-hint">Начни вводить название набора или предмета снаряжения, затем выбери вариант из подсказки.</div>
+                        <div class="lookup-meta">
+                            <div class="lookup-field"><span class="lookup-field-label">Тип</span><input class="lookup-field-value" type="text" data-field="itemType" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Цена</span><input class="lookup-field-value" type="text" data-field="cost" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Вес</span><input class="lookup-field-value" type="text" data-field="weight" readonly></div>
+                            <div class="lookup-field"><span class="lookup-field-label">Примечание</span><input class="lookup-field-value" type="text" data-field="notes" readonly></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="coin-grid">
+                    <div class="coin-box">
+                        <div class="field-label">Медные</div>
+                        <input class="editable-inline small-input" type="number" value="0">
+                    </div>
+                    <div class="coin-box">
+                        <div class="field-label">Серебряные</div>
+                        <input class="editable-inline small-input" type="number" value="0">
+                    </div>
+                    <div class="coin-box">
+                        <div class="field-label">Золотые</div>
+                        <input class="editable-inline small-input" type="number" value="0">
+                    </div>
+                    <div class="coin-box">
+                        <div class="field-label">Платиновые</div>
+                        <input class="editable-inline small-input" type="number" value="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="field-box" style="margin-bottom: 12px;">
+            <div class="field-label">Заметки игрока</div>
+            <textarea class="editable-area" style="min-height: 140px;"></textarea>
+        </div>
+
+        <div class="bottom-row" style="margin-bottom: 0;">
+            <div class="footer-note">
+                <input class="editable-inline" type="text" value="">
+            </div>
+        </div>
+    </div>
+    <datalist id="weapon-list-0"></datalist>
+    <datalist id="weapon-list-1"></datalist>
+    <datalist id="weapon-list-2"></datalist>
+    <datalist id="armor-list-3"></datalist>
+    <datalist id="armor-list-4"></datalist>
+    <datalist id="equipment-list-5"></datalist>
+    <datalist id="spell-list-0"></datalist>
+    <datalist id="spell-list-1"></datalist>
+    <datalist id="spell-list-2"></datalist>
+    <script id="custom-dnd-db" type="application/json">
+        {
+            "weapons": [],
+            "spells": [],
+            "armors": [],
+            "equipment": [],
+            "magicItems": [],
+            "artifacts": []
+        }
+    </script>
+    <script>
+        const PROFICIENCY_BONUS = 2;
+        const BASE_KNOWLEDGE = {
+            weapons: [
+            { name: "Дубинка", damageDice: "1к4", damageType: "Дробящий", properties: "Легкое", weaponType: "Простое" },
+            { name: "Кинжал", damageDice: "1к4", damageType: "Колющий", properties: "Легкое, фехтовальное, метательное 20/60", weaponType: "Простое" },
+            { name: "Большая дубина", damageDice: "1к8", damageType: "Дробящий", properties: "Двуручное", weaponType: "Простое" },
+            { name: "Ручной топор", damageDice: "1к6", damageType: "Рубящий", properties: "Легкое, метательное 20/60", weaponType: "Простое" },
+            { name: "Метательное копье", damageDice: "1к6", damageType: "Колющий", properties: "Метательное 30/120", weaponType: "Простое" },
+            { name: "Легкий молот", damageDice: "1к4", damageType: "Дробящий", properties: "Легкое, метательное 20/60", weaponType: "Простое" },
+            { name: "Булава", damageDice: "1к6", damageType: "Дробящий", properties: "Нет", weaponType: "Простое" },
+            { name: "Боевой посох", damageDice: "1к6", damageType: "Дробящий", properties: "Универсальное (1к8)", weaponType: "Простое" },
+            { name: "Серп", damageDice: "1к4", damageType: "Рубящий", properties: "Легкое", weaponType: "Простое" },
+            { name: "Копье", damageDice: "1к6", damageType: "Колющий", properties: "Метательное 20/60, универсальное (1к8)", weaponType: "Простое" },
+            { name: "Легкий арбалет", damageDice: "1к8", damageType: "Колющий", properties: "Боеприпас, двуручное, зарядка, дистанция 80/320", weaponType: "Простое" },
+            { name: "Дротик", damageDice: "1к4", damageType: "Колющий", properties: "Фехтовальное, метательное 20/60", weaponType: "Простое" },
+            { name: "Короткий лук", damageDice: "1к6", damageType: "Колющий", properties: "Боеприпас, двуручное, дистанция 80/320", weaponType: "Простое" },
+            { name: "Праща", damageDice: "1к4", damageType: "Дробящий", properties: "Боеприпас, дистанция 30/120", weaponType: "Простое" },
+            { name: "Боевой топор", damageDice: "1к8", damageType: "Рубящий", properties: "Универсальное (1к10)", weaponType: "Воинское" },
+            { name: "Цеп", damageDice: "1к8", damageType: "Дробящий", properties: "Нет", weaponType: "Воинское" },
+            { name: "Глефа", damageDice: "1к10", damageType: "Рубящий", properties: "Двуручное, тяжелое, досягаемость", weaponType: "Воинское" },
+            { name: "Секира", damageDice: "1к12", damageType: "Рубящий", properties: "Тяжелое, двуручное", weaponType: "Воинское" },
+            { name: "Двуручный меч", damageDice: "2к6", damageType: "Рубящий", properties: "Тяжелое, двуручное", weaponType: "Воинское" },
+            { name: "Алебарда", damageDice: "1к10", damageType: "Рубящий", properties: "Двуручное, тяжелое, досягаемость", weaponType: "Воинское" },
+            { name: "Копье всадника", damageDice: "1к12", damageType: "Колющий", properties: "Досягаемость, особое", weaponType: "Воинское" },
+            { name: "Длинный меч", damageDice: "1к8", damageType: "Рубящий", properties: "Универсальное (1к10)", weaponType: "Воинское" },
+            { name: "Боевой молот", damageDice: "1к8", damageType: "Дробящий", properties: "Универсальное (1к10)", weaponType: "Воинское" },
+            { name: "Моргенштерн", damageDice: "1к8", damageType: "Колющий", properties: "Нет", weaponType: "Воинское" },
+            { name: "Пика", damageDice: "1к10", damageType: "Колющий", properties: "Тяжелое, двуручное, досягаемость", weaponType: "Воинское" },
+            { name: "Рапира", damageDice: "1к8", damageType: "Колющий", properties: "Фехтовальное", weaponType: "Воинское" },
+            { name: "Шимитар", damageDice: "1к6", damageType: "Рубящий", properties: "Фехтовальное, легкое", weaponType: "Воинское" },
+            { name: "Короткий меч", damageDice: "1к6", damageType: "Колющий", properties: "Фехтовальное, легкое", weaponType: "Воинское" },
+            { name: "Трезубец", damageDice: "1к6", damageType: "Колющий", properties: "Метательное 20/60, универсальное (1к8)", weaponType: "Воинское" },
+            { name: "Боевой цеп", damageDice: "1к8", damageType: "Дробящий", properties: "Нет", weaponType: "Воинское" },
+            { name: "Боевая кирка", damageDice: "1к8", damageType: "Колющий", properties: "Нет", weaponType: "Воинское" },
+            { name: "Кнут", damageDice: "1к4", damageType: "Рубящий", properties: "Фехтовальное, досягаемость", weaponType: "Воинское" },
+            { name: "Духовая трубка", damageDice: "1", damageType: "Колющий", properties: "Боеприпас, зарядка, дистанция 25/100", weaponType: "Воинское" },
+            { name: "Ручной арбалет", damageDice: "1к6", damageType: "Колющий", properties: "Боеприпас, легкое, зарядка, дистанция 30/120", weaponType: "Воинское" },
+            { name: "Тяжелый арбалет", damageDice: "1к10", damageType: "Колющий", properties: "Боеприпас, тяжелое, двуручное, зарядка, дистанция 100/400", weaponType: "Воинское" },
+            { name: "Длинный лук", damageDice: "1к8", damageType: "Колющий", properties: "Боеприпас, тяжелое, двуручное, дистанция 150/600", weaponType: "Воинское" },
+            { name: "Сеть", damageDice: "—", damageType: "—", properties: "Особое, метательное 5/15", weaponType: "Воинское" },
+            { name: "Длинное копье", damageDice: "1к12", damageType: "Колющий", properties: "Досягаемость, особое", weaponType: "Воинское" },
+            ],
+            spells: [
+            { name: "Указание", levelType: "Заговор", classes: "Жрец, друид", save: "Нет", damageType: "Нет", effect: "К цели добавляется 1к4 к одной проверке характеристики" },
+            { name: "Сопротивление", levelType: "Заговор", classes: "Жрец, друид", save: "Нет", damageType: "Нет", effect: "Цель добавляет 1к4 к одному спасброску" },
+            { name: "Свет", levelType: "Заговор", classes: "Жрец, волшебник, чародей, бард, изобретатель", save: "Нет", damageType: "Нет", effect: "Предмет излучает яркий свет" },
+            { name: "Починка", levelType: "Заговор", classes: "Бард, волшебник, жрец, друид, чародей, колдун, изобретатель", save: "Нет", damageType: "Нет", effect: "Чинит небольшую поломку в предмете" },
+            { name: "Малая иллюзия", levelType: "Заговор", classes: "Бард, колдун, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Создает звук или статичное изображение" },
+            { name: "Волшебная рука", levelType: "Заговор", classes: "Бард, колдун, волшебник, чародей, изобретатель", save: "Нет", damageType: "Нет", effect: "Создает призрачную руку для манипуляций на расстоянии" },
+            { name: "Сообщение", levelType: "Заговор", classes: "Бард, волшебник, чародей, друид", save: "Нет", damageType: "Нет", effect: "Шепот передается на расстоянии и можно ответить" },
+            { name: "Фокусы", levelType: "Заговор", classes: "Бард, колдун, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Небольшие магические трюки" },
+            { name: "Шоковое прикосновение", levelType: "Заговор", classes: "Волшебник, чародей, изобретатель", save: "Нет", damageType: "Молния", effect: "Рукопашная атака заклинанием, 1к8 молнии, цель не может реагировать" },
+            { name: "Леденящее прикосновение", levelType: "Заговор", classes: "Колдун, волшебник, чародей", save: "Нет", damageType: "Некротический", effect: "Дальняя атака, 1к8 некротического урона, цель не лечится" },
+            { name: "Громовой клинок", levelType: "Заговор", classes: "Волшебник, колдун, чародей, изобретатель", save: "Телосложение", damageType: "Гром", effect: "Рукопашная атака оружием, при движении цели взрыв грома" },
+            { name: "Зелёно-пламенный клинок", levelType: "Заговор", classes: "Волшебник, колдун, чародей, изобретатель", save: "Нет", damageType: "Огонь", effect: "Рукопашная атака оружием, пламя перескакивает на вторую цель" },
+            { name: "Морозное касание", levelType: "Заговор", classes: "Друид, изобретатель, волшебник, чародей", save: "Нет", damageType: "Холод", effect: "Покрывает цель инеем и мешает ее следующей атаке" },
+            { name: "Сотворение костра", levelType: "Заговор", classes: "Друид, колдун, волшебник, чародей", save: "Ловкость", damageType: "Огонь", effect: "Создает костер под существом, 1к8 огня" },
+            { name: "Колдовской взрыв", levelType: "Заговор", classes: "Колдун", save: "Нет", damageType: "Силовое", effect: "Дальняя атака лучом силы" },
+            { name: "Огненный снаряд", levelType: "Заговор", classes: "Волшебник, чародей", save: "Нет", damageType: "Огонь", effect: "Дальняя атака заклинанием, 1к10 огня" },
+            { name: "Луч холода", levelType: "Заговор", classes: "Волшебник, чародей, изобретатель", save: "Нет", damageType: "Холод", effect: "Дальняя атака, 1к8 холода, снижает скорость" },
+            { name: "Ядовитые брызги", levelType: "Заговор", classes: "Волшебник, чародей, колдун, друид, изобретатель", save: "Телосложение", damageType: "Яд", effect: "1к12 яда при провале" },
+            { name: "Священное пламя", levelType: "Заговор", classes: "Жрец", save: "Ловкость", damageType: "Сияние", effect: "1к8 сияющего урона при провале" },
+            { name: "Указующий перст", levelType: "Заговор", classes: "Бард, жрец, друид", save: "Нет", damageType: "Нет", effect: "Следующая атака по цели с преимуществом" },
+            { name: "Благословение", levelType: "1 круг", classes: "Жрец, паладин", save: "Нет", damageType: "Нет", effect: "До трех существ добавляют 1к4 к атакам и спасброскам" },
+            { name: "Лечение ран", levelType: "1 круг", classes: "Бард, друид, жрец, паладин, следопыт, изобретатель", save: "Нет", damageType: "Лечение", effect: "Касанием восстанавливает 1к8 + модификатор характеристики заклинателя" },
+            { name: "Исцеляющее слово", levelType: "1 круг", classes: "Бард, друид, жрец", save: "Нет", damageType: "Лечение", effect: "На расстоянии восстанавливает 1к4 + модификатор характеристики заклинателя" },
+            { name: "Щит", levelType: "1 круг", classes: "Волшебник, чародей", save: "Нет", damageType: "Нет", effect: "+5 к КД до начала следующего хода, защита от волшебной стрелы" },
+            { name: "Доспех мага", levelType: "1 круг", classes: "Волшебник, чародей", save: "Нет", damageType: "Нет", effect: "КД цели становится 13 + модификатор Ловкости" },
+            { name: "Падение пёрышком", levelType: "1 круг", classes: "Бард, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Замедляет падение до безопасной скорости" },
+            { name: "Тревога", levelType: "1 круг", classes: "Следопыт, волшебник, изобретатель", save: "Нет", damageType: "Нет", effect: "Создает магическую сигнализацию на области" },
+            { name: "Обнаружение магии", levelType: "1 круг", classes: "Бард, жрец, друид, паладин, следопыт, волшебник, чародей, изобретатель", save: "Нет", damageType: "Нет", effect: "Обнаруживает присутствие магии поблизости" },
+            { name: "Опознание", levelType: "1 круг", classes: "Бард, волшебник, изобретатель", save: "Нет", damageType: "Нет", effect: "Определяет свойства магического предмета или заклинания" },
+            { name: "Прыжок", levelType: "1 круг", classes: "Друид, следопыт, волшебник, чародей, изобретатель", save: "Нет", damageType: "Нет", effect: "Утраивает дистанцию прыжков цели" },
+            { name: "Дружба с животными", levelType: "1 круг", classes: "Бард, друид, следопыт", save: "Мудрость", damageType: "Нет", effect: "Убеждает зверя не атаковать" },
+            { name: "Говорить с животными", levelType: "1 круг", classes: "Бард, друид, следопыт, колдун", save: "Нет", damageType: "Нет", effect: "Позволяет понимать зверей и говорить с ними" },
+            { name: "Безмолвный образ", levelType: "1 круг", classes: "Бард, колдун, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Создает движущуюся визуальную иллюзию" },
+            { name: "Маскировка", levelType: "1 круг", classes: "Бард, колдун, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Меняет внешний облик цели" },
+            { name: "Очарование личности", levelType: "1 круг", classes: "Бард, друид, колдун, волшебник, чародей", save: "Мудрость", damageType: "Нет", effect: "Гуманоид считает заклинателя знакомым" },
+            { name: "Приказ", levelType: "1 круг", classes: "Жрец, паладин", save: "Мудрость", damageType: "Нет", effect: "Цель выполняет однословную команду" },
+            { name: "Порча", levelType: "1 круг", classes: "Колдун", save: "Нет", damageType: "Нет", effect: "Накладывает 1к6 некротического урона по проклятой цели при атаке" },
+            { name: "Церемония", levelType: "1 круг", classes: "Жрец, паладин", save: "Нет", damageType: "Нет", effect: "Набор священных обрядов с различными эффектами" },
+            { name: "Иллюзорный текст", levelType: "1 круг", classes: "Бард, колдун, волшебник", save: "Нет", damageType: "Нет", effect: "Скрывает или меняет содержимое текста" },
+            { name: "Силлери Барбс", levelType: "1 круг", classes: "Бард, колдун, волшебник", save: "Нет", damageType: "Нет", effect: "Понижает удачный бросок врага и дает преимущество союзнику" },
+            { name: "Таша: едкий отвар", levelType: "1 круг", classes: "Волшебник, чародей, изобретатель", save: "Ловкость", damageType: "Кислота", effect: "Линия кислоты наносит 2к4 урона и оставляет эффект на следующий ход" },
+            { name: "Ведьмин снаряд", levelType: "1 круг", classes: "Чародей, колдун, волшебник", save: "Нет", damageType: "Молния", effect: "Дальняя атака, 1к12 молнии, поддержание" },
+            { name: "Громовая волна", levelType: "1 круг", classes: "Бард, друид, волшебник", save: "Телосложение", damageType: "Гром", effect: "2к8 грома и отталкивание" },
+            { name: "Волшебная стрела", levelType: "1 круг", classes: "Волшебник, чародей", save: "Нет", damageType: "Силовое", effect: "3 дротика по 1к4+1 силового урона" },
+            { name: "Сон", levelType: "1 круг", classes: "Бард, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Усыпляет существ на сумму 5к8 хитов" },
+            { name: "Пылающие руки", levelType: "1 круг", classes: "Волшебник, чародей", save: "Ловкость", damageType: "Огонь", effect: "Конус 15 футов, 3к6 огня" },
+            { name: "Ледяной нож", levelType: "1 круг", classes: "Друид, волшебник, чародей", save: "Ловкость", damageType: "Колющий / холод", effect: "Рукопашная атака, затем взрыв холода 2к6" },
+            { name: "Поглощение стихий", levelType: "1 круг", classes: "Друид, следопыт, волшебник, чародей", save: "Нет", damageType: "Защита", effect: "Сопротивление стихийному урону и усиление следующей атаки" },
+            { name: "Катапульта", levelType: "1 круг", classes: "Волшебник, чародей, изобретатель", save: "Ловкость", damageType: "Дробящий", effect: "Метает предмет, нанося 3к8 дробящего урона" },
+            { name: "Призыв к дуэли", levelType: "1 круг", classes: "Паладин", save: "Мудрость", damageType: "Нет", effect: "Вынуждает цель концентрироваться на поединке" },
+            { name: "Тензеров парящий диск", levelType: "1 круг", classes: "Волшебник", save: "Нет", damageType: "Нет", effect: "Создает плавающий диск для переноски груза" },
+            { name: "Усмирение эмоций", levelType: "2 круг", classes: "Бард, жрец", save: "Харизма", damageType: "Нет", effect: "Подавляет страх, очарование и агрессию" },
+            { name: "Левитация", levelType: "2 круг", classes: "Колдун, волшебник, чародей, изобретатель", save: "Телосложение", damageType: "Нет", effect: "Поднимает существо или предмет в воздух" },
+            { name: "Защита от яда", levelType: "2 круг", classes: "Друид, жрец, паладин, следопыт", save: "Нет", damageType: "Нет", effect: "Нейтрализует яд и дает преимущество против отравления" },
+            { name: "Поиск предмета", levelType: "2 круг", classes: "Бард, жрец, друид, паладин, следопыт", save: "Нет", damageType: "Нет", effect: "Указывает направление к знакомому предмету" },
+            { name: "Молчание", levelType: "2 круг", classes: "Бард, жрец, следопыт", save: "Нет", damageType: "Нет", effect: "Создает область полной тишины" },
+            { name: "Паучье лазание", levelType: "2 круг", classes: "Колдун, волшебник, чародей, друид", save: "Нет", damageType: "Нет", effect: "Позволяет ходить по стенам и потолку" },
+            { name: "Туманный шаг", levelType: "2 круг", classes: "Колдун, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Телепорт на 30 футов бонусным действием" },
+            { name: "Невидимость", levelType: "2 круг", classes: "Бард, волшебник, чародей, колдун, изобретатель", save: "Нет", damageType: "Нет", effect: "Делает цель невидимой до атаки или заклинания" },
+            { name: "Увеличение/уменьшение", levelType: "2 круг", classes: "Волшебник, чародей, изобретатель", save: "Телосложение", damageType: "Нет", effect: "Изменяет размер цели и модифицирует урон" },
+            { name: "Луч слабости", levelType: "2 круг", classes: "Волшебник, колдун", save: "Нет", damageType: "Нет", effect: "Луч заставляет цель наносить половину урона оружием" },
+            { name: "Паутина", levelType: "2 круг", classes: "Волшебник, чародей, изобретатель", save: "Ловкость", damageType: "Нет", effect: "Опутывает область липкой паутиной" },
+            { name: "Тьма", levelType: "2 круг", classes: "Колдун, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Создает область магической тьмы" },
+            { name: "Размытый образ", levelType: "2 круг", classes: "Волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Атаки по цели совершаются с помехой" },
+            { name: "Зеркальное отражение", levelType: "2 круг", classes: "Волшебник, чародей, колдун", save: "Нет", damageType: "Нет", effect: "Создает иллюзорные копии заклинателя" },
+            { name: "Удержание личности", levelType: "2 круг", classes: "Бард, жрец, друид, волшебник, чародей, колдун", save: "Мудрость", damageType: "Нет", effect: "Паралич гуманоида при провале" },
+            { name: "Лунный луч", levelType: "2 круг", classes: "Друид", save: "Телосложение", damageType: "Сияние", effect: "Столб лунного света наносит 2к10 сияющего урона" },
+            { name: "Духовное оружие", levelType: "2 круг", classes: "Жрец", save: "Нет", damageType: "Силовое", effect: "Создает парящее оружие для атак бонусным действием" },
+            { name: "Обнаружение мыслей", levelType: "2 круг", classes: "Бард, волшебник, чародей", save: "Мудрость", damageType: "Нет", effect: "Читает поверхностные мысли и исследует разум" },
+            { name: "Таша: едкое варево", levelType: "2 круг", classes: "Волшебник, чародей, изобретатель", save: "Ловкость", damageType: "Кислота", effect: "Линия кислоты наносит 6к4 урона и ослабляет цель" },
+            { name: "Пылающий клинок теней", levelType: "2 круг", classes: "Волшебник, колдун, чародей", save: "Нет", damageType: "Психический", effect: "Создает меч из тени, наносящий психический урон" },
+            { name: "Призыв зверя", levelType: "2 круг", classes: "Друид, следопыт", save: "Нет", damageType: "Нет", effect: "Призывает дух зверя в выбранной форме" },
+            { name: "Призыв духа тени", levelType: "3 круг", classes: "Колдун, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Призывает теневого духа" },
+            { name: "Призыв духа нежити", levelType: "3 круг", classes: "Колдун, волшебник", save: "Нет", damageType: "Нет", effect: "Призывает дух нежити" },
+            { name: "Призыв малой феи", levelType: "3 круг", classes: "Друид, следопыт, колдун, волшебник", save: "Нет", damageType: "Нет", effect: "Призывает маленького духа феи" },
+            { name: "Контрзаклинание", levelType: "3 круг", classes: "Колдун, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Прерывает сотворение вражеского заклинания" },
+            { name: "Рассеивание магии", levelType: "3 круг", classes: "Бард, жрец, друид, паладин, следопыт, волшебник, чародей, колдун, изобретатель", save: "Нет", damageType: "Нет", effect: "Прекращает действующие заклинания и магические эффекты" },
+            { name: "Маяк надежды", levelType: "3 круг", classes: "Жрец", save: "Нет", damageType: "Нет", effect: "Союзники получают преимущество на мудрость и максимум от лечения" },
+            { name: "Оживление мертвецов", levelType: "3 круг", classes: "Жрец, волшебник", save: "Нет", damageType: "Нет", effect: "Поднимает зомби или скелета под контролем заклинателя" },
+            { name: "Защита от энергии", levelType: "3 круг", classes: "Жрец, друид, следопыт, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Дает сопротивление выбранному типу стихийного урона" },
+            { name: "Ясновидение", levelType: "3 круг", classes: "Бард, жрец, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Создает удаленную точку зрения или слуха" },
+            { name: "Полет", levelType: "3 круг", classes: "Колдун, волшебник, чародей, изобретатель", save: "Нет", damageType: "Нет", effect: "Цель получает скорость полета 60 футов" },
+            { name: "Ускорение", levelType: "3 круг", classes: "Волшебник, чародей", save: "Нет", damageType: "Нет", effect: "+2 к КД, преимущество на Ловкость, дополнительное действие" },
+            { name: "Замедление", levelType: "3 круг", classes: "Волшебник, чародей, изобретатель", save: "Мудрость", damageType: "Нет", effect: "Замедляет до шести существ" },
+            { name: "Страж духа", levelType: "3 круг", classes: "Жрец", save: "Мудрость", damageType: "Сияние / некротический", effect: "Духи окружают заклинателя и ранят врагов в области" },
+            { name: "Оживление", levelType: "3 круг", classes: "Жрец, паладин", save: "Нет", damageType: "Лечение", effect: "Возвращает существо к жизни, если смерть была недавней" },
+            { name: "Огненный шар", levelType: "3 круг", classes: "Волшебник, чародей", save: "Ловкость", damageType: "Огонь", effect: "8к6 огня по области" },
+            { name: "Молния", levelType: "3 круг", classes: "Волшебник, чародей", save: "Ловкость", damageType: "Молния", effect: "Линия 100 футов, 8к6 молнии" },
+            { name: "Гипнотический узор", levelType: "3 круг", classes: "Бард, колдун, волшебник, чародей", save: "Мудрость", damageType: "Нет", effect: "Очаровывает и обездвиживает существ в кубе" },
+            { name: "Призыв молнии", levelType: "3 круг", classes: "Друид", save: "Ловкость", damageType: "Молния", effect: "Многократные удары молнией по области" },
+            { name: "Призрачный скакун", levelType: "3 круг", classes: "Волшебник", save: "Нет", damageType: "Нет", effect: "Создает магического ездового коня" },
+            { name: "Астральная проекция Таши", levelType: "3 круг", classes: "Волшебник, колдун, чародей", save: "Нет", damageType: "Нет", effect: "Усиливает заклинателя потусторонними чертами на время" },
+            { name: "Призыв духа ярости", levelType: "3 круг", classes: "Друид, жрец, следопыт", save: "Нет", damageType: "Нет", effect: "Призывает дух ярости для поддержки в бою" },
+            { name: "Огненный щит", levelType: "4 круг", classes: "Волшебник, колдун, чародей", save: "Нет", damageType: "Огонь / холод", effect: "Даёт сопротивление и ранит атакующих" },
+            { name: "Сфера водянистости", levelType: "4 круг", classes: "Волшебник, друид, чародей", save: "Сила", damageType: "Нет", effect: "Сфера воды сдерживает и перемещает существ" },
+            { name: "Психическое копьё Раулотима", levelType: "4 круг", classes: "Бард, колдун, волшебник", save: "Интеллект", damageType: "Психический", effect: "7к6 психического урона и недееспособность реакций" },
+            { name: "Призыв порождения", levelType: "4 круг", classes: "Колдун, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Призывает аберрацию в выбранной форме" },
+            { name: "Призыв конструкта", levelType: "4 круг", classes: "Волшебник, изобретатель", save: "Нет", damageType: "Нет", effect: "Призывает магический конструкт" },
+            { name: "Изгнание", levelType: "4 круг", classes: "Жрец, паладин, колдун, волшебник, чародей", save: "Харизма", damageType: "Нет", effect: "Изгоняет цель на другой план или временно удаляет из боя" },
+            { name: "Высшая невидимость", levelType: "4 круг", classes: "Бард, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Цель остается невидимой даже после атак и заклинаний" },
+            { name: "Каменная кожа", levelType: "4 круг", classes: "Друид, следопыт, волшебник, колдун, чародей", save: "Нет", damageType: "Нет", effect: "Сопротивление немагическому дробящему, колющему и рубящему урону" },
+            { name: "Град", levelType: "4 круг", classes: "Друид, волшебник, чародей", save: "Ловкость", damageType: "Дробящий", effect: "20-футовый радиус, 2к8 дробящего и труднопроходимая местность" },
+            { name: "Огненная стена", levelType: "4 круг", classes: "Друид, волшебник, чародей", save: "Ловкость", damageType: "Огонь", effect: "Создает стену пламени, наносящую 5к8 огня" },
+            { name: "Полиморф", levelType: "4 круг", classes: "Бард, друид, волшебник, чародей", save: "Мудрость", damageType: "Нет", effect: "Преображает существо в зверя" },
+            { name: "Дверь измерений", levelType: "4 круг", classes: "Бард, колдун, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Телепортирует заклинателя и спутника на 500 футов" },
+            { name: "Смятение", levelType: "4 круг", classes: "Бард, друид, волшебник, чародей", save: "Мудрость", damageType: "Нет", effect: "Нарушает поведение существ в области" },
+            { name: "Ледяная буря", levelType: "4 круг", classes: "Друид, волшебник, чародей", save: "Ловкость", damageType: "Дробящий / холод", effect: "Взрыв льда и града наносит 2к8 дробящего и 4к6 холода" },
+            { name: "Призыв великого демона", levelType: "4 круг", classes: "Колдун, волшебник", save: "Харизма", damageType: "Нет", effect: "Призывает демона, которым трудно управлять" },
+            { name: "Каменное обличье", levelType: "4 круг", classes: "Друид, волшебник", save: "Нет", damageType: "Нет", effect: "Сливает заклинателя с камнем и дает сенсорику вокруг" },
+            { name: "Воображаемый убийца", levelType: "4 круг", classes: "Бард, волшебник, колдун, чародей", save: "Мудрость", damageType: "Психический", effect: "Иллюзия ужаса наносит 4к10 психического урона" },
+            { name: "Свобода перемещения", levelType: "4 круг", classes: "Бард, друид, жрец, следопыт, изобретатель", save: "Нет", damageType: "Нет", effect: "Цель игнорирует удержание и труднопроходимую местность" },
+            { name: "Превращение камня в плоть", levelType: "4 круг", classes: "Волшебник, чародей", save: "Телосложение", damageType: "Нет", effect: "Снимает окаменение или делает камень податливым" },
+            { name: "Призыв драконьего духа", levelType: "5 круг", classes: "Волшебник, друид, чародей", save: "Нет", damageType: "Нет", effect: "Призывает дух дракона с выбранным видом урона" },
+            { name: "Телекинез", levelType: "5 круг", classes: "Бард, волшебник, чародей", save: "Сила", damageType: "Нет", effect: "Двигает существ и объекты силой мысли" },
+            { name: "Трансмутация камня", levelType: "5 круг", classes: "Друид, волшебник", save: "Ловкость", damageType: "Нет", effect: "Меняет свойства камня в области" },
+            { name: "Знание легенд", levelType: "5 круг", classes: "Бард, жрец, волшебник", save: "Нет", damageType: "Нет", effect: "Даёт легендарные сведения о существе, месте или предмете" },
+            { name: "Высшее восстановление", levelType: "5 круг", classes: "Бард, жрец, друид, изобретатель", save: "Нет", damageType: "Лечение", effect: "Снимает тяжелые ослабления и эффекты" },
+            { name: "Стена камня", levelType: "5 круг", classes: "Друид, волшебник, чародей", save: "Ловкость", damageType: "Нет", effect: "Создает постоянную каменную стену" },
+            { name: "Оживление мертвеца", levelType: "5 круг", classes: "Жрец, паладин", save: "Нет", damageType: "Лечение", effect: "Возвращает существо к жизни, если оно мертво не более 10 дней" },
+            { name: "Анимирование предметов", levelType: "5 круг", classes: "Бард, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Оживляет предметы, превращая их в атакующих слуг" },
+            { name: "Связь с природой", levelType: "5 круг", classes: "Друид, следопыт", save: "Нет", damageType: "Нет", effect: "Позволяет узнать сведения о местности" },
+            { name: "Конус холода", levelType: "5 круг", classes: "Волшебник, чародей", save: "Телосложение", damageType: "Холод", effect: "60-футовый конус, 8к8 холода" },
+            { name: "Удержание чудовища", levelType: "5 круг", classes: "Бард, колдун, волшебник, чародей", save: "Мудрость", damageType: "Нет", effect: "Парализует любое существо при провале" },
+            { name: "Стена силы", levelType: "5 круг", classes: "Волшебник", save: "Нет", damageType: "Нет", effect: "Создает практически неразрушимую невидимую стену" },
+            { name: "Телепортационный круг", levelType: "5 круг", classes: "Бард, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Создает круг телепортации к известному сигилу" },
+            { name: "Массовое лечение ран", levelType: "5 круг", classes: "Бард, друид, жрец", save: "Нет", damageType: "Лечение", effect: "Лечит до шести существ на 3к8 + модификатор" },
+            { name: "Реинкарнация", levelType: "5 круг", classes: "Друид", save: "Нет", damageType: "Нет", effect: "Возвращает мертвое существо к жизни в новом теле" },
+            { name: "Стальной ветер", levelType: "5 круг", classes: "Волшебник, следопыт", save: "Нет", damageType: "Силовое", effect: "Телепортирующиеся атаки по пяти существам, 6к10 силового" },
+            { name: "Синаптический статический разряд", levelType: "5 круг", classes: "Бард, колдун, волшебник, чародей", save: "Интеллект", damageType: "Психический", effect: "8к6 психического урона и ослабление атак" },
+            { name: "Призыв дьявола Таши", levelType: "5 круг", classes: "Колдун, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Призывает исчадие выбранного типа" },
+            { name: "Призыв небожителя", levelType: "5 круг", classes: "Жрец, паладин", save: "Нет", damageType: "Нет", effect: "Призывает небесного духа в боевой форме" },
+            { name: "Призыв элементаля", levelType: "4 круг", classes: "Друид, волшебник, следопыт", save: "Нет", damageType: "Нет", effect: "Призывает элементального духа выбранного типа" },
+            { name: "Призыв феи", levelType: "3 круг", classes: "Друид, следопыт, колдун, волшебник", save: "Нет", damageType: "Нет", effect: "Призывает дух феи с разными чертами" },
+            { name: "Призыв зверя Таши", levelType: "2 круг", classes: "Друид, следопыт", save: "Нет", damageType: "Нет", effect: "Призывает зверя воздуха, земли или воды" },
+            { name: "Цепная молния", levelType: "6 круг", classes: "Волшебник, чародей", save: "Ловкость", damageType: "Молния", effect: "10к8 молнии по главной цели и до трех дополнительных" },
+            { name: "Распад", levelType: "6 круг", classes: "Волшебник, чародей", save: "Ловкость", damageType: "Силовое", effect: "10к6 + 40 силового урона, может обратить в прах" },
+            { name: "Сфера неуязвимости", levelType: "6 круг", classes: "Волшебник", save: "Нет", damageType: "Нет", effect: "Останавливает заклинания 5 круга и ниже" },
+            { name: "Мгновенное призывание Таши", levelType: "6 круг", classes: "Бард, колдун, волшебник", save: "Нет", damageType: "Нет", effect: "Призывает привязанное ранее существо или предмет" },
+            { name: "Кости земли", levelType: "6 круг", classes: "Друид, колдун, волшебник", save: "Ловкость", damageType: "Дробящий", effect: "Столпы камня поднимаются из земли, нанося 6к6 дробящего" },
+            { name: "Массовое внушение", levelType: "6 круг", classes: "Бард, колдун, волшебник, чародей", save: "Мудрость", damageType: "Нет", effect: "До двенадцати существ получают навязанное действие" },
+            { name: "Солнечный луч", levelType: "6 круг", classes: "Друид, волшебник, чародей", save: "Телосложение", damageType: "Сияние", effect: "Луч наносит 6к8 сияющего и ослепляет" },
+            { name: "Истинное зрение", levelType: "6 круг", classes: "Бард, жрец, друид, колдун, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Даёт зрение сквозь тьму, иллюзии и невидимость" },
+            { name: "Хождение по ветру", levelType: "6 круг", classes: "Друид", save: "Нет", damageType: "Нет", effect: "Превращает группу в облака для быстрого путешествия" },
+            { name: "Мгновенная крепость Даэрна", levelType: "6 круг", classes: "Волшебник", save: "Нет", damageType: "Нет", effect: "Разворачивает магическую башню из маленького куба" },
+            { name: "Исцеление", levelType: "6 круг", classes: "Жрец, друид", save: "Нет", damageType: "Лечение", effect: "Восстанавливает 70 хитов и снимает ряд состояний" },
+            { name: "Пир героев", levelType: "6 круг", classes: "Жрец, друид, бард", save: "Нет", damageType: "Нет", effect: "Даёт иммунитет к страху и яду, повышает хиты и мудрость" },
+            { name: "Слово силы: боль", levelType: "7 круг", classes: "Колдун, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Существо со 100 хитов и менее охвачено мучительной болью" },
+            { name: "Телепорт", levelType: "7 круг", classes: "Бард, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Телепортирует группу на большое расстояние" },
+            { name: "Огненный шторм", levelType: "7 круг", classes: "Жрец, друид", save: "Ловкость", damageType: "Огонь", effect: "До десяти кубов огня, 7к10 урона" },
+            { name: "Эфирность", levelType: "7 круг", classes: "Бард, жрец, колдун, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Позволяет перейти в Эфирный План" },
+            { name: "Палец смерти", levelType: "7 круг", classes: "Колдун, волшебник, чародей", save: "Телосложение", damageType: "Некротический", effect: "7к8 + 30 некротического урона" },
+            { name: "Звёздная корона", levelType: "7 круг", classes: "Изобретатель, колдун, волшебник", save: "Ловкость", damageType: "Сияние", effect: "Семь звездных осколков наносят 4к12 сияющего" },
+            { name: "Регенерация", levelType: "7 круг", classes: "Бард, жрец, друид", save: "Нет", damageType: "Лечение", effect: "Восстанавливает хиты каждый раунд и отращивает конечности" },
+            { name: "Мираж", levelType: "7 круг", classes: "Бард, друид, волшебник", save: "Нет", damageType: "Нет", effect: "Меняет огромную область местности иллюзией и частичной реальностью" },
+            { name: "Симулякр", levelType: "7 круг", classes: "Волшебник", save: "Нет", damageType: "Нет", effect: "Создает частично реальную копию существа из снега или льда" },
+            { name: "Сдвиг плана", levelType: "7 круг", classes: "Жрец, друид, колдун, волшебник, чародей", save: "Харизма", damageType: "Нет", effect: "Перемещает существ между планами" },
+            { name: "Землетрясение", levelType: "8 круг", classes: "Жрец, друид, волшебник", save: "Ловкость", damageType: "Нет", effect: "Сотрясает местность, разрушает строения и валит существ" },
+            { name: "Слово силы: оглушение", levelType: "8 круг", classes: "Бард, колдун, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Существо со 150 хитов и менее оглушается" },
+            { name: "Лабиринт", levelType: "8 круг", classes: "Волшебник", save: "Нет", damageType: "Нет", effect: "Изгоняет существо в демиплан-лабиринт" },
+            { name: "Солнечная вспышка", levelType: "8 круг", classes: "Жрец, друид, волшебник, чародей", save: "Телосложение", damageType: "Сияние", effect: "12к6 сияющего и ослепление в большой сфере" },
+            { name: "Горизонт событий Таши", levelType: "8 круг", classes: "Волшебник, колдун, чародей", save: "Телосложение", damageType: "Силовое", effect: "Притягивает и сдерживает существ в сфере" },
+            { name: "Антимагическое поле", levelType: "8 круг", classes: "Жрец, паладин, волшебник, колдун", save: "Нет", damageType: "Нет", effect: "Подавляет магию в сфере вокруг заклинателя" },
+            { name: "Клон", levelType: "8 круг", classes: "Волшебник", save: "Нет", damageType: "Нет", effect: "Создает запасное тело на случай смерти" },
+            { name: "Мрачная тьма", levelType: "8 круг", classes: "Колдун, волшебник, чародей", save: "Ловкость", damageType: "Психический", effect: "Магическая тьма наносит 8к8 психического урона в области" },
+            { name: "Предвидение", levelType: "9 круг", classes: "Бард, друид, колдун, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Цель получает преимущество почти на всё, враги бьют с помехой" },
+            { name: "Метеоритный дождь", levelType: "9 круг", classes: "Волшебник, чародей", save: "Ловкость", damageType: "Огонь / дробящий", effect: "Четыре метеора, 20к6 огня и 20к6 дробящего" },
+            { name: "Слово силы: смерть", levelType: "9 круг", classes: "Бард, колдун, волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Существо со 100 хитов и менее мгновенно умирает" },
+            { name: "Истинное превращение", levelType: "9 круг", classes: "Бард, колдун, волшебник, чародей", save: "Мудрость", damageType: "Нет", effect: "Навсегда превращает цель в другое существо или предмет" },
+            { name: "Желание", levelType: "9 круг", classes: "Волшебник, чародей", save: "Нет", damageType: "Нет", effect: "Исполняет почти любой магический эффект ценой риска" },
+            { name: "Клинок бедствия", levelType: "9 круг", classes: "Волшебник, колдун, чародей", save: "Нет", damageType: "Силовое", effect: "Парящий клинок наносит 4к12 силового урона и проходит через укрытия" },
+            { name: "Врата", levelType: "9 круг", classes: "Жрец, волшебник, чародей, колдун", save: "Нет", damageType: "Нет", effect: "Открывает портал между планами и может призвать известное существо" },
+            { name: "Массовое исцеление", levelType: "9 круг", classes: "Жрец", save: "Нет", damageType: "Лечение", effect: "Лечит до 700 хитов, распределенных между существами" },
+            { name: "Психический крик", levelType: "9 круг", classes: "Бард, колдун, волшебник, чародей", save: "Интеллект", damageType: "Психический", effect: "10к6 психического урона и оглушение в широкой области" },
+            { name: "Разящая кара", levelType: "1 круг", classes: "Паладин", save: "Нет", damageType: "Психический", effect: "Следующая атака +1к6 психического урона" }
+            ],
+            armors: [
+                { name: "Стеганый доспех", armorClass: "11 + Лов", armorType: "Легкий", stealth: "Помеха", notes: "Легкая броня" },
+                { name: "Кожаный доспех", armorClass: "11 + Лов", armorType: "Легкий", stealth: "Без помехи", notes: "Базовая броня" },
+                { name: "Проклепанная кожа", armorClass: "12 + Лов", armorType: "Легкий", stealth: "Без помехи", notes: "Улучшенная легкая броня" },
+                { name: "Шкурный доспех", armorClass: "12 + Лов (макс. +2)", armorType: "Средний", stealth: "Без помехи", notes: "Средняя броня" },
+                { name: "Кольчужная рубаха", armorClass: "13 + Лов (макс. +2)", armorType: "Средний", stealth: "Без помехи", notes: "Средняя броня" },
+                { name: "Чешуйчатый доспех", armorClass: "14 + Лов (макс. +2)", armorType: "Средний", stealth: "Помеха", notes: "Средняя броня" },
+                { name: "Кираса", armorClass: "14 + Лов (макс. +2)", armorType: "Средний", stealth: "Без помехи", notes: "Средняя броня" },
+                { name: "Полулаты", armorClass: "15 + Лов (макс. +2)", armorType: "Средний", stealth: "Помеха", notes: "Средняя броня" },
+                { name: "Колечный доспех", armorClass: "14", armorType: "Тяжелый", stealth: "Помеха", notes: "Тяжелая броня" },
+                { name: "Кольчуга", armorClass: "16", armorType: "Тяжелый", stealth: "Помеха", notes: "Требует Силу 13" },
+                { name: "Наборный доспех", armorClass: "17", armorType: "Тяжелый", stealth: "Помеха", notes: "Требует Силу 15" },
+                { name: "Латы", armorClass: "18", armorType: "Тяжелый", stealth: "Помеха", notes: "Требует Силу 15" },
+                { name: "Кольчуга", armorClass: "16", armorType: "Тяжелый", stealth: "Помеха", notes: "Требует Силу 13" },
+                { name: "Латы", armorClass: "18", armorType: "Тяжелый", stealth: "Помеха", notes: "Требует Силу 15" },
+                { name: "Щит", armorClass: "+2 к КД", armorType: "Щит", stealth: "Без помехи", notes: "Носится отдельно" }
+            ],
+            equipment: [
+                { name: "Набор путешественника", itemType: "Набор", tag: "Стартовый набор, PHB", cost: "10 зм", weight: "59 фнт.", notes: "Рюкзак, спальник, столовый набор, трутница, 10 факелов, рационы на 10 дней, бурдюк, 50 фт. пеньковой веревки" },
+                { name: "Набор исследователя подземелий", itemType: "Набор", tag: "Стартовый набор, PHB", cost: "12 зм", weight: "61.5 фнт.", notes: "Рюкзак, ломик, молоток, 10 крюков, 10 факелов, трутница, рационы на 10 дней, бурдюк, 50 фт. пеньковой веревки" },
+                { name: "Набор дипломата", itemType: "Набор", tag: "Стартовый набор, PHB", cost: "39 зм", weight: "36 фнт.", notes: "Сундук, 2 контейнера для карт и свитков, комплект отличной одежды, чернила, перо, лампа, 2 фляги масла, 5 листов бумаги, духи, воск и мыло" },
+                { name: "Набор священника", itemType: "Набор", tag: "Стартовый набор, PHB", cost: "19 зм", weight: "24 фнт.", notes: "Рюкзак, одеяло, 10 свечей, трутница, коробка для пожертвований, 2 упаковки благовоний, кадило, облачение, рационы на 2 дня, бурдюк" },
+                { name: "Набор учёного", itemType: "Набор", tag: "Стартовый набор, PHB", cost: "40 зм", weight: "10 фнт.", notes: "Рюкзак, научная книга, чернила, писчее перо, 10 листов пергамента, мешочек с песком, маленький нож" },
+                { name: "Набор артиста", itemType: "Набор", tag: "Стартовый набор, PHB", cost: "40 зм", weight: "38 фнт.", notes: "Рюкзак, спальник, 2 костюма, 5 свечей, рационы на 5 дней, бурдюк, набор для грима" },
+                { name: "Набор грабителя", itemType: "Набор", tag: "Стартовый набор, PHB", cost: "16 зм", weight: "46 фнт.", notes: "Рюкзак, 1000 шариков, 10 фт. веревки, колокольчик, 5 свечей, ломик, молоток, 10 крюков, фонарь, 2 фляги масла, рационы на 5 дней, трутница, бурдюк" },
+                { name: "Набор посла", itemType: "Набор", tag: "Стартовый набор, PHB", cost: "39 зм", weight: "36 фнт.", notes: "Альтернативное название набора дипломата" },
+                { name: "Набор охотника на монстров", itemType: "Набор", tag: "Стартовый набор, CoS", cost: "33 зм", weight: "—", notes: "Сундук, ломик, молоток, 3 деревянных кола, святой символ, святая вода, кандалы, стальное зеркало, масло, трутница, 3 факела" },
+                { name: "Рюкзак", itemType: "Снаряжение", cost: "2 зм", weight: "5 фнт.", notes: "Базовый контейнер" },
+                { name: "Спальник", itemType: "Снаряжение", cost: "1 зм", weight: "7 фнт.", notes: "Для отдыха в походе" },
+                { name: "Бурдюк", itemType: "Снаряжение", cost: "2 см", weight: "5 фнт. (полный)", notes: "Для воды" },
+                { name: "Факел", itemType: "Снаряжение", cost: "1 мм", weight: "1 фнт.", notes: "Горит 1 час" },
+                { name: "Трутница", itemType: "Снаряжение", cost: "5 см", weight: "1 фнт.", notes: "Для разведения огня" },
+                { name: "Веревка пеньковая 50 фт.", itemType: "Снаряжение", cost: "1 зм", weight: "10 фнт.", notes: "Прочная обычная веревка" },
+                { name: "Веревка шелковая 50 фт.", itemType: "Снаряжение", cost: "10 зм", weight: "5 фнт.", notes: "Легче и прочнее" },
+                { name: "Палатка", itemType: "Снаряжение", cost: "2 зм", weight: "20 фнт.", notes: "На двух существ" },
+                { name: "Ломик", itemType: "Снаряжение", cost: "2 зм", weight: "5 фнт.", notes: "Преимущество на проверки Силы, где помогает рычаг" },
+                { name: "Таран, портативный", itemType: "Снаряжение", cost: "4 зм", weight: "35 фнт.", notes: "+4 к проверкам Силы на выбивание дверей" },
+                { name: "Столовый набор", itemType: "Снаряжение", cost: "2 см", weight: "1 фнт.", notes: "Посуда и приборы" },
+                { name: "Фонарь, закрытый", itemType: "Снаряжение", cost: "5 зм", weight: "2 фнт.", notes: "Направленный свет" },
+                { name: "Лампа", itemType: "Снаряжение", cost: "5 см", weight: "1 фнт.", notes: "Требует масло" },
+                { name: "Масло (фляга)", itemType: "Снаряжение", cost: "1 см", weight: "1 фнт.", notes: "Горючее" },
+                { name: "Рационы (1 день)", itemType: "Снаряжение", cost: "5 см", weight: "2 фнт.", notes: "Сухой паек" },
+                { name: "Святая вода (фляга)", itemType: "Снаряжение", cost: "25 зм", weight: "1 фнт.", notes: "Эффективна против нежити и исчадий" },
+                { name: "Священный символ", itemType: "Фокусировка", cost: "5 зм", weight: "1 фнт.", notes: "Фокусировка жреца или паладина" },
+                { name: "Книга заклинаний", itemType: "Снаряжение", cost: "50 зм", weight: "3 фнт.", notes: "100 пустых страниц для заклинаний" },
+                { name: "Колчан", itemType: "Снаряжение", cost: "1 зм", weight: "1 фнт.", notes: "Вмещает 20 стрел" },
+                { name: "Контейнер для арбалетных болтов", itemType: "Снаряжение", cost: "1 зм", weight: "1 фнт.", notes: "Вмещает 20 болтов" },
+                { name: "Контейнер для карт и свитков", itemType: "Снаряжение", cost: "1 зм", weight: "1 фнт.", notes: "Тубус для карт и свитков" },
+                { name: "Комплект целителя", itemType: "Снаряжение", cost: "5 зм", weight: "3 фнт.", notes: "10 использований для стабилизации" },
+                { name: "Комплект для лазания", itemType: "Снаряжение", cost: "25 зм", weight: "12 фнт.", notes: "Помогает закрепляться на высоте" },
+                { name: "Взрывчатое вещество", itemType: "Особое снаряжение", cost: "—", weight: "—", notes: "Взрыв, Сл 13 Ловкости, 3к6 дробящего" },
+                { name: "Взрывное семя", itemType: "Особое снаряжение", cost: "—", weight: "—", notes: "Бросок до 30 фт., Сл 10 Ловкости, 1к8 дробящего" },
+                { name: "Опутывающая граната", itemType: "Особое снаряжение", cost: "—", weight: "—", notes: "Сл 15 Ловкости или опутан" },
+                { name: "Парашютный ранец", itemType: "Особое снаряжение", cost: "—", weight: "—", notes: "Смягчает падение при раскрытии" },
+                { name: "Одежда из шелковой гордости", itemType: "Особое снаряжение", cost: "—", weight: "—", notes: "Если без брони, КД = 11 + Лов" }
+            ],
+            magicItems: [
+                { name: "Пламенный язык", itemType: "Магическое оружие", rarity: "Редкий", attunement: "Да", notes: "Доп. 2к6 огня при активации" },
+                { name: "Мантия защиты", itemType: "Чудесный предмет", rarity: "Необычный", attunement: "Да", notes: "+1 к КД и спасброскам" },
+                { name: "Доспех сопротивления", itemType: "Магическая броня", rarity: "Редкий", attunement: "Да", notes: "Сопротивление одному типу урона" }
+            ],
+            artifacts: [
+                { name: "Рука Векны", itemType: "Артефакт", rarity: "Артефакт", attunement: "Да", notes: "Легендарный темный артефакт" },
+                { name: "Око Векны", itemType: "Артефакт", rarity: "Артефакт", attunement: "Да", notes: "Дарует могущество и проклятие" },
+                { name: "Книга мерзкой тьмы", itemType: "Артефакт", rarity: "Артефакт", attunement: "Нет", notes: "Мрачный уникальный том" }
+            ]
+        };
+        let KNOWLEDGE_BASE = null;
+
+        function formatModifier(value) {
+            if (value > 0) return `+${value}`;
+            return String(value);
+        }
+
+        function getAbilityScores() {
+            const scores = {};
+            document.querySelectorAll("[data-ability]").forEach((input) => {
+                const key = input.dataset.ability;
+                const numeric = Number.parseInt(input.value, 10);
+                scores[key] = Number.isNaN(numeric) ? 0 : numeric;
+            });
+            return scores;
+        }
+
+        function scoreToModifier(score) {
+            return Math.floor((score - 10) / 2);
+        }
+
+        function normalizeLookupName(value) {
+            return value.trim().toLowerCase().replace(/ё/g, "е");
+        }
+
+        function dedupeByName(items) {
+            const seen = new Map();
+            items.forEach((item) => {
+                if (!item || !item.name) return;
+                seen.set(normalizeLookupName(item.name), item);
+            });
+            return Array.from(seen.values());
+        }
+
+        function loadCustomKnowledge() {
+            const node = document.getElementById("custom-dnd-db");
+            if (!node) return {};
+
+            try {
+                return JSON.parse(node.textContent);
+            } catch (error) {
+                console.error("custom-dnd-db parse error", error);
+                return {};
+            }
+        }
+
+        function buildKnowledgeBase() {
+            const custom = loadCustomKnowledge();
+            const categories = ["weapons", "spells", "armors", "equipment", "magicItems", "artifacts"];
+            const merged = {};
+
+            categories.forEach((category) => {
+                const baseItems = Array.isArray(BASE_KNOWLEDGE[category]) ? BASE_KNOWLEDGE[category] : [];
+                const customItems = Array.isArray(custom[category]) ? custom[category] : [];
+                merged[category] = dedupeByName([...baseItems, ...customItems]);
+            });
+
+            KNOWLEDGE_BASE = merged;
+        }
+
+        function populateDataList(id, items) {
+            let datalist = document.getElementById(id);
+            if (!datalist) {
+                datalist = document.createElement("datalist");
+                datalist.id = id;
+                document.body.appendChild(datalist);
+            }
+            datalist.innerHTML = items.map((item) => `<option value="${item.name}"></option>`).join("");
+        }
+
+        function autoResizeLookupField(field) {
+            if (!field || field.tagName !== "TEXTAREA") return;
+            field.style.height = "0px";
+            field.style.height = `${field.scrollHeight}px`;
+        }
+
+        function upgradeLookupFields() {
+            document.querySelectorAll(".lookup-field-value").forEach((field) => {
+                const key = field.dataset.field;
+                const wrapper = field.closest(".lookup-field");
+
+                if (wrapper && key) {
+                    wrapper.classList.add(`field-${key}`);
+                }
+
+                if (field.tagName === "TEXTAREA") {
+                    autoResizeLookupField(field);
+                    return;
+                }
+
+                const area = document.createElement("textarea");
+                area.className = `${field.className} lookup-field-area`;
+                area.dataset.field = key || "";
+                area.readOnly = true;
+                area.value = field.value || "";
+                field.replaceWith(area);
+                autoResizeLookupField(area);
+            });
+        }
+
+        function getFilteredItems(row) {
+            const type = row.dataset.lookupType;
+            const db =
+                type === "weapon"
+                    ? KNOWLEDGE_BASE.weapons
+                    : type === "armor"
+                        ? KNOWLEDGE_BASE.armors
+                        : type === "equipment"
+                            ? KNOWLEDGE_BASE.equipment
+                            : KNOWLEDGE_BASE.spells;
+            const filters = Object.fromEntries(
+                Array.from(row.querySelectorAll("[data-filter]")).map((select) => [select.dataset.filter, select.value])
+            );
+
+            return db.filter((item) => {
+                if (type === "weapon") {
+                    if (filters.weaponType && item.weaponType !== filters.weaponType) return false;
+                    if (filters.damageType && item.damageType !== filters.damageType) return false;
+                    return true;
+                }
+
+                if (type === "armor") {
+                    if (filters.armorType && item.armorType !== filters.armorType) return false;
+                    if (filters.stealth && item.stealth !== filters.stealth) return false;
+                    return true;
+                }
+
+                if (type === "equipment") {
+                    if (filters.itemType && !(item.itemType || "").includes(filters.itemType)) return false;
+                    if (filters.tag && !(item.tag || "").includes(filters.tag)) return false;
+                    return true;
+                }
+
+                if (filters.levelType && item.levelType !== filters.levelType) return false;
+                if (filters.class && !(item.classes || "").includes(filters.class)) return false;
+                return true;
+            });
+        }
+
+        function syncRowDataList(row, rowIndex) {
+            const type = row.dataset.lookupType;
+            const listId = `${type}-list-${rowIndex}`;
+            const input = row.querySelector(".lookup-name");
+            if (input) input.setAttribute("list", listId);
+            populateDataList(listId, getFilteredItems(row));
+        }
+
+        function updateLookupRow(row) {
+            const type = row.dataset.lookupType;
+            const input = row.querySelector(".lookup-name");
+            const value = normalizeLookupName(input.value);
+            const db = getFilteredItems(row);
+            const match = db.find((item) => normalizeLookupName(item.name) === value);
+
+            row.querySelectorAll("[data-field]").forEach((field) => {
+                const key = field.dataset.field;
+                field.value = match ? (match[key] || "—") : "";
+            });
+        }
+
+        function updateAllLookups() {
+            document.querySelectorAll("[data-lookup-type]").forEach((row, index) => {
+                syncRowDataList(row, index);
+                updateLookupRow(row);
+            });
+            document.querySelectorAll(".lookup-field-area").forEach((field) => autoResizeLookupField(field));
+        }
+
+        function setPortrait(src) {
+            const portrait = document.querySelector(".portrait-area");
+            const image = portrait ? portrait.querySelector(".portrait-image") : null;
+            if (!portrait || !image) return;
+
+            if (src) {
+                image.src = src;
+                portrait.classList.add("has-image");
+            } else {
+                image.src = "";
+                portrait.classList.remove("has-image");
+            }
+        }
+
+        function loadStoredPortrait() {
+            const saved = localStorage.getItem("interactiveCharacterPortrait");
+            if (saved) setPortrait(saved);
+        }
+
+        function updateDerivedValues() {
+            const scores = getAbilityScores();
+            const mods = {};
+
+            Object.entries(scores).forEach(([key, score]) => {
+                const mod = scoreToModifier(score);
+                mods[key] = mod;
+                const output = document.querySelector(`[data-ability-mod="${key}"]`);
+                if (output) output.value = formatModifier(mod);
+            });
+
+            const initiativeOutput = document.querySelector("[data-initiative-output]");
+            if (initiativeOutput) {
+                initiativeOutput.value = formatModifier(mods.dex || 0);
+            }
+
+            document.querySelectorAll("[data-save-output]").forEach((output) => {
+                const key = output.dataset.saveOutput;
+                const checkbox = document.querySelector(`.save-prof[data-ability-ref="${key}"]`);
+                const total = (mods[key] || 0) + (checkbox && checkbox.checked ? PROFICIENCY_BONUS : 0);
+                output.value = formatModifier(total);
+            });
+
+            document.querySelectorAll("[data-skill-ability]").forEach((row) => {
+                const key = row.dataset.skillAbility;
+                const selected = row.querySelector(".prof-radio:checked");
+                const extra = selected ? Number.parseInt(selected.value, 10) || 0 : 0;
+                const total = (mods[key] || 0) + extra;
+                const output = row.querySelector(".skill-bonus-input");
+                if (output) output.value = formatModifier(total);
+            });
+
+            document.querySelectorAll("[data-passive-output]").forEach((output) => {
+                const skillLabel = output.dataset.passiveOutput;
+                const skillInput = Array.from(document.querySelectorAll(".skill-row .skill-name-input")).find((input) =>
+                    input.value.includes(skillLabel)
+                );
+                const skillRow = skillInput ? skillInput.closest(".skill-row") : null;
+                const skillBonus = skillRow ? Number.parseInt(skillRow.querySelector(".skill-bonus-input").value, 10) || 0 : 0;
+                output.value = String(10 + skillBonus);
+            });
+
+            updateAllLookups();
+        }
+
+        document.addEventListener("mousedown", (event) => {
+            if (event.target.matches(".prof-radio")) {
+                event.target.dataset.wasChecked = event.target.checked ? "true" : "false";
+            }
+        });
+
+        document.addEventListener("click", (event) => {
+            if (event.target.matches(".prof-radio") && event.target.dataset.wasChecked === "true") {
+                event.target.checked = false;
+                event.target.dataset.wasChecked = "false";
+                updateDerivedValues();
+            }
+        });
+
+        document.addEventListener("input", (event) => {
+            if (event.target.matches("[data-ability]")) {
+                updateDerivedValues();
+            } else if (event.target.matches(".lookup-name")) {
+                const row = event.target.closest("[data-lookup-type]");
+                updateLookupRow(row);
+                row.querySelectorAll(".lookup-field-area").forEach((field) => autoResizeLookupField(field));
+            } else if (event.target.matches("[data-filter]")) {
+                const row = event.target.closest("[data-lookup-type]");
+                const rowIndex = Array.from(document.querySelectorAll("[data-lookup-type]")).indexOf(row);
+                syncRowDataList(row, rowIndex);
+                updateLookupRow(row);
+                row.querySelectorAll(".lookup-field-area").forEach((field) => autoResizeLookupField(field));
+            }
+        });
+
+        document.addEventListener("focusin", (event) => {
+            if (event.target.matches(".lookup-name")) {
+                const row = event.target.closest("[data-lookup-type]");
+                const rowIndex = Array.from(document.querySelectorAll("[data-lookup-type]")).indexOf(row);
+                syncRowDataList(row, rowIndex);
+            }
+        });
+
+        document.addEventListener("change", (event) => {
+            if (event.target.matches(".portrait-input")) {
+                const file = event.target.files && event.target.files[0];
+                const portrait = event.target.closest(".portrait-area");
+                const image = portrait ? portrait.querySelector(".portrait-image") : null;
+                if (!file || !portrait || !image) return;
+
+                const reader = new FileReader();
+                reader.onload = () => {
+                    setPortrait(reader.result);
+                    localStorage.setItem("interactiveCharacterPortrait", reader.result);
+                };
+                reader.readAsDataURL(file);
+                return;
+            }
+
+            if (event.target.matches("[data-ability], .save-prof, .prof-radio")) {
+                updateDerivedValues();
+            }
+        });
+
+        document.addEventListener("click", (event) => {
+            if (event.target.matches(".portrait-clear")) {
+                const input = document.querySelector(".portrait-input");
+                if (input) input.value = "";
+                localStorage.removeItem("interactiveCharacterPortrait");
+                setPortrait("");
+            }
+        });
+
+        upgradeLookupFields();
+        buildKnowledgeBase();
+        loadStoredPortrait();
+        updateDerivedValues();
+    </script>
+</body>
+</html>
