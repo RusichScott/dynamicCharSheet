@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -29,6 +28,96 @@
             box-shadow: 0 15px 25px rgba(0, 0, 0, 0.45);
             padding: 22px;
             color: #2f2115;
+        }
+
+        .page-reset-button {
+            position: fixed;
+            left: 18px;
+            bottom: 18px;
+            z-index: 50;
+            border: 2px solid #3e2c1c;
+            background: linear-gradient(180deg, #c94132 0%, #92281d 100%);
+            color: #fff7ea;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+            padding: 12px 18px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .page-reset-button:hover {
+            filter: brightness(1.08);
+        }
+
+        .page-reset-button:active {
+            transform: translateY(1px);
+        }
+
+        .music-widget {
+            position: fixed;
+            top: 18px;
+            right: 18px;
+            width: min(360px, calc(100vw - 36px));
+            z-index: 45;
+            border: 2px solid #3e2c1c;
+            background: linear-gradient(145deg, #f8f2df 0%, #ece1cd 100%);
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
+            color: #2f2115;
+        }
+
+        .music-widget.is-collapsed .music-widget-body {
+            display: none;
+        }
+
+        .music-widget-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(62, 44, 28, 0.22);
+        }
+
+        .music-widget-title {
+            font-size: 0.9rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .music-widget-toggle {
+            min-width: 34px;
+            height: 32px;
+            border: 1px solid #3e2c1c;
+            background: linear-gradient(180deg, #f4e6c9 0%, #d2b786 100%);
+            color: #2f2115;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .music-widget-toggle:hover {
+            filter: brightness(1.04);
+        }
+
+        .music-widget-body {
+            padding: 10px;
+        }
+
+        .music-widget-note {
+            font-size: 0.78rem;
+            color: #5b4a34;
+            margin-bottom: 8px;
+        }
+
+        .music-widget-frame {
+            display: block;
+            width: 100%;
+            height: 360px;
+            border: 1px solid rgba(62, 44, 28, 0.24);
+            background: #f3ead7;
         }
 
         .name-level-row {
@@ -107,6 +196,13 @@
             gap: 12px;
         }
 
+        .name-top-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 148px;
+            gap: 12px;
+            align-items: stretch;
+        }
+
         .inline-fields {
             display: grid;
             grid-template-columns: minmax(0, 1.28fr) minmax(0, 1.28fr) minmax(160px, 0.72fr);
@@ -148,22 +244,271 @@
         }
 
         .selection-line.with-level {
-            grid-template-columns: minmax(96px, 0.84fr) minmax(0, 1.28fr) 56px;
+            grid-template-columns: minmax(96px, 0.9fr) minmax(0, 1.1fr);
         }
 
         .selection-main {
             min-width: 0;
         }
 
+        .selection-input-wrap {
+            position: relative;
+            min-width: 0;
+            border-bottom: 1px solid rgba(62, 44, 28, 0.28);
+        }
+
+        .selection-input-wrap::after {
+            content: "▼";
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.72rem;
+            color: #5b4a34;
+            pointer-events: none;
+        }
+
+        .selection-input-wrap.is-disabled {
+            opacity: 0.65;
+        }
+
+        .selection-input-wrap .character-input {
+            padding-right: 14px;
+        }
+
+        .selection-input-wrap.is-open {
+            z-index: 20;
+        }
+
+        .selection-dropdown {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            display: none;
+            max-height: 220px;
+            overflow-y: auto;
+            border: 1px solid #3e2c1c;
+            background: #fffaf0;
+            box-shadow: 0 10px 18px rgba(62, 44, 28, 0.18);
+        }
+
+        .selection-dropdown,
+        .custom-select-panel,
+        .lookup-suggestion-panel {
+            scrollbar-width: thin;
+            scrollbar-color: #8e7755 #f3ead7;
+        }
+
+        .selection-dropdown::-webkit-scrollbar,
+        .custom-select-panel::-webkit-scrollbar,
+        .lookup-suggestion-panel::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .selection-dropdown::-webkit-scrollbar-track,
+        .custom-select-panel::-webkit-scrollbar-track,
+        .lookup-suggestion-panel::-webkit-scrollbar-track {
+            background: #f3ead7;
+            border-left: 1px solid rgba(62, 44, 28, 0.14);
+        }
+
+        .selection-dropdown::-webkit-scrollbar-thumb,
+        .custom-select-panel::-webkit-scrollbar-thumb,
+        .lookup-suggestion-panel::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #bda17a 0%, #8e7755 100%);
+            border: 1px solid #6b563c;
+        }
+
+        .selection-input-wrap.is-open .selection-dropdown {
+            display: block;
+        }
+
+        .selection-option {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid rgba(62, 44, 28, 0.12);
+            background: transparent;
+            color: inherit;
+            text-align: left;
+            padding: 8px 10px;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .selection-option:last-child {
+            border-bottom: none;
+        }
+
+        .selection-option:hover,
+        .selection-option.is-active {
+            background: #efe2c6;
+        }
+
+        .selection-option.is-current:not(.is-active) {
+            background: rgba(239, 226, 198, 0.45);
+        }
+
+        .selection-empty {
+            padding: 8px 10px;
+            color: rgba(47, 33, 21, 0.65);
+            font-size: 0.9rem;
+        }
+
+        .custom-select-source {
+            display: none !important;
+        }
+
+        .custom-select {
+            position: relative;
+            min-width: 0;
+            width: 100%;
+        }
+
+        .custom-select-control {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 28px;
+            align-items: center;
+            gap: 6px;
+            min-height: 30px;
+            border: 1px solid #b09e84;
+            background: #fffaf0;
+            padding: 4px 6px;
+        }
+
+        .custom-select-input {
+            width: 100%;
+            min-width: 0;
+            border: none;
+            background: transparent;
+            color: inherit;
+            outline: none;
+            font: inherit;
+            line-height: 1.3;
+            padding: 0;
+        }
+
+        .custom-select-toggle {
+            border: 1px solid #3e2c1c;
+            background: linear-gradient(180deg, #efe1c2 0%, #d7c39e 100%);
+            color: #2f2115;
+            min-width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 1px 1px 0 #fff6df, inset -1px -1px 0 #b39c78;
+            cursor: pointer;
+            font-size: 0.72rem;
+            line-height: 1;
+        }
+
+        .custom-select-panel {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            z-index: 25;
+            display: none;
+            max-height: 220px;
+            overflow-y: auto;
+            border: 1px solid #3e2c1c;
+            background: #fffaf0;
+            box-shadow: 0 10px 18px rgba(62, 44, 28, 0.18);
+        }
+
+        .custom-select.is-open .custom-select-panel {
+            display: block;
+        }
+
+        .custom-select-option {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid rgba(62, 44, 28, 0.12);
+            background: transparent;
+            color: inherit;
+            text-align: left;
+            padding: 8px 10px;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .custom-select-option:last-child {
+            border-bottom: none;
+        }
+
+        .custom-select-option:hover,
+        .custom-select-option.is-active,
+        .custom-select-option.is-current:not(.is-active) {
+            background: #efe2c6;
+        }
+
+        .custom-select-empty {
+            padding: 8px 10px;
+            color: rgba(47, 33, 21, 0.65);
+            font-size: 0.9rem;
+        }
+
+        .lookup-input-wrap {
+            position: relative;
+        }
+
+        .lookup-suggestion-panel {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            z-index: 22;
+            display: none;
+            max-height: 220px;
+            overflow-y: auto;
+            border: 1px solid #3e2c1c;
+            background: #fffaf0;
+            box-shadow: 0 10px 18px rgba(62, 44, 28, 0.18);
+        }
+
+        .lookup-input-wrap.is-open .lookup-suggestion-panel {
+            display: block;
+        }
+
+        .lookup-suggestion {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid rgba(62, 44, 28, 0.12);
+            background: transparent;
+            color: inherit;
+            text-align: left;
+            padding: 8px 10px;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .lookup-suggestion:last-child {
+            border-bottom: none;
+        }
+
+        .lookup-suggestion:hover,
+        .lookup-suggestion.is-active,
+        .lookup-suggestion.is-current:not(.is-active) {
+            background: #efe2c6;
+        }
+
+        .lookup-suggestion-empty {
+            padding: 8px 10px;
+            color: rgba(47, 33, 21, 0.65);
+            font-size: 0.9rem;
+        }
+
         .selection-sub {
             min-width: 0;
             display: flex;
             align-items: center;
-            gap: 2px;
-            overflow: hidden;
+            gap: 1px;
+            overflow: visible;
         }
 
-        .selection-sub.is-empty {
+        .selection-sub.is-empty .selection-bracket,
+        .selection-sub.is-empty .character-input {
             opacity: 0.7;
         }
 
@@ -191,6 +536,63 @@
             text-align: right;
             margin-left: auto;
             font-weight: 700;
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .stepper-control {
+            display: grid;
+            grid-template-columns: 28px minmax(0, 1fr) 28px;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stepper-btn {
+            border: 1px solid #3e2c1c;
+            background: linear-gradient(180deg, #efe1c2 0%, #d7c39e 100%);
+            color: #2f2115;
+            min-width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 800;
+            line-height: 1;
+            cursor: pointer;
+            box-shadow: inset 1px 1px 0 #fff6df, inset -1px -1px 0 #b39c78;
+        }
+
+        .stepper-btn:active {
+            transform: translateY(1px);
+        }
+
+        .level-stepper {
+            grid-template-columns: 24px minmax(36px, 48px) 24px;
+            justify-content: center;
+            margin-left: 0;
+        }
+
+        .level-stepper .stepper-btn {
+            min-width: 24px;
+            height: 24px;
+            font-size: 0.9rem;
+        }
+
+        .level-stepper .level-input {
+            width: 100%;
+            min-width: 0;
+            margin-left: 0;
+            text-align: center;
+            justify-self: stretch;
         }
 
         .experience-line {
@@ -390,6 +792,25 @@
             color: inherit;
         }
 
+        .combat-display {
+            width: 100%;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: clip;
+            white-space: nowrap;
+            margin-top: auto;
+        }
+
+        .combat-number[data-race-speed-output] {
+            display: flex;
+            align-items: flex-end;
+            font-size: 1.9rem;
+            letter-spacing: 0;
+            text-align: left;
+            line-height: 1.1;
+            min-height: 2.2rem;
+        }
+
         .combat-note {
             width: 100%;
             border: none;
@@ -438,7 +859,7 @@
         }
 
         .skill-row {
-            grid-template-columns: 8px minmax(0, 1fr) 108px 58px;
+            grid-template-columns: 8px minmax(0, 1fr) 124px 58px;
             gap: 4px;
         }
 
@@ -466,9 +887,8 @@
         .prof-controls {
             display: flex;
             align-items: center;
-            gap: 8px;
-            justify-content: center;
-            font-size: 0.85rem;
+            gap: 6px;
+            justify-content: flex-end;
             white-space: nowrap;
         }
 
@@ -476,10 +896,21 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
+            font-size: 0.78rem;
+            color: #3e2c1c;
         }
 
-        .prof-radio {
+        .skill-prof,
+        .skill-expertise {
             accent-color: #3e2c1c;
+        }
+
+        .expertise-toggle {
+            border: 1px solid #3e2c1c;
+            background: #e8d8b8;
+            padding: 1px 6px;
+            border-radius: 999px;
+            font-weight: 700;
         }
 
         .info-under-skills {
@@ -599,6 +1030,29 @@
             gap: 8px;
         }
 
+        .lookup-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .lookup-confirm-btn {
+            border: 2px solid #3e2c1c;
+            background: linear-gradient(180deg, #efe1c2 0%, #d7c39e 100%);
+            color: #2f2115;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            box-shadow: inset 1px 1px 0 #fff6df, inset -1px -1px 0 #b39c78;
+        }
+
+        .lookup-confirm-btn.is-confirmed {
+            background: linear-gradient(180deg, #d8ead3 0%, #b8d3ad 100%);
+        }
+
         .lookup-field {
             min-width: 0;
             display: flex;
@@ -695,6 +1149,10 @@
             .combat-groups,
             .weapons-row,
             .inline-fields {
+                grid-template-columns: 1fr;
+            }
+
+            .name-top-row {
                 grid-template-columns: 1fr;
             }
 
@@ -812,7 +1270,7 @@
             }
 
             .skill-row {
-                grid-template-columns: 8px minmax(0, 1fr) 82px 52px;
+                grid-template-columns: 8px minmax(0, 1fr) 108px 52px;
                 gap: 4px;
             }
 
@@ -930,7 +1388,7 @@
             }
 
             .skill-row {
-                grid-template-columns: 8px minmax(0, 1fr) 74px 46px;
+                grid-template-columns: 8px minmax(0, 1fr) 96px 46px;
                 gap: 3px;
             }
 
@@ -964,6 +1422,11 @@
         }
 
         @media print {
+            .page-reset-button,
+            .music-widget {
+                display: none !important;
+            }
+
             html,
             body {
                 width: 100%;
@@ -1127,7 +1590,7 @@
             }
 
             .skill-row {
-                grid-template-columns: 8px minmax(0, 1fr) 72px 44px;
+                grid-template-columns: 8px minmax(0, 1fr) 90px 44px;
                 gap: 2px;
                 padding: 2px 0;
             }
@@ -1208,9 +1671,34 @@
                 overflow: visible;
             }
         }
+
+        @media (max-width: 920px) {
+            .music-widget {
+                position: static;
+                width: min(1120px, 100%);
+                margin: 0 auto 16px;
+            }
+        }
     </style>
 </head>
 <body>
+    <aside class="music-widget" data-music-widget>
+        <div class="music-widget-header">
+            <div class="music-widget-title">Фоновая музыка</div>
+            <button class="music-widget-toggle" type="button" data-music-toggle aria-expanded="true">−</button>
+        </div>
+        <div class="music-widget-body">
+            <div class="music-widget-note">Плейлист medieval fantasy music из SoundCloud.</div>
+            <iframe
+                class="music-widget-frame"
+                title="Medieval Fantasy Music"
+                scrolling="no"
+                frameborder="no"
+                allow="autoplay"
+                src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/user-678728947-759766535/sets/medieval-fantasy-music&color=%238e7755&auto_play=false&hide_related=false&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=false">
+            </iframe>
+        </div>
+    </aside>
     <div class="sheet">
         <div class="name-level-row">
             <div class="portrait-wrapper">
@@ -1222,40 +1710,53 @@
                 <button class="portrait-clear" type="button">Очистить портрет</button>
             </div>
             <div class="name-fields">
-                <div class="field-box" style="padding: 12px;">
-                    <div class="field-label">Имя персонажа</div>
-                    <input class="editable" type="text" value="">
+                <div class="name-top-row">
+                    <div class="field-box" style="padding: 12px;">
+                        <div class="field-label">Имя персонажа</div>
+                        <input class="editable" type="text" value="">
+                    </div>
+                    <div class="field-box" style="padding: 12px;">
+                        <div class="field-label">Уровень</div>
+                        <div class="stepper-control level-stepper">
+                            <button class="stepper-btn" type="button" data-step-target="[data-character-level]" data-step="-1">-</button>
+                            <input class="character-input small-input level-input" type="number" value="1" min="1" max="20" data-character-level>
+                            <button class="stepper-btn" type="button" data-step-target="[data-character-level]" data-step="1">+</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="inline-fields">
                     <div class="field-box race-box">
                         <div class="field-label">Раса</div>
                         <div class="selection-line">
-                            <select class="character-select small-input selection-main" data-character-race>
-                                <option value="">Раса</option>
-                            </select>
+                            <div class="selection-input-wrap" data-selection-search="race">
+                                <input class="character-input small-input selection-main" type="text" value="" placeholder="Раса" autocomplete="off" spellcheck="false" data-character-race>
+                                <div class="selection-dropdown"></div>
+                            </div>
                             <div class="selection-sub is-empty" data-subrace-wrap>
                                 <span class="selection-bracket">(</span>
-                                <select class="character-select small-input selection-sub-select" data-character-subrace>
-                                    <option value="">Подраса</option>
-                                </select>
+                                <div class="selection-input-wrap" data-selection-search="subrace">
+                                    <input class="character-input small-input selection-sub-select" type="text" value="" placeholder="Подраса" autocomplete="off" spellcheck="false" data-character-subrace>
+                                    <div class="selection-dropdown"></div>
+                                </div>
                                 <span class="selection-bracket">)</span>
                             </div>
                         </div>
                     </div>
                     <div class="field-box class-box">
-                        <div class="field-label">Класс и уровень</div>
+                        <div class="field-label">Класс</div>
                         <div class="selection-line with-level">
-                            <select class="character-select small-input selection-main" data-character-class>
-                                <option value="">Класс</option>
-                            </select>
+                            <div class="selection-input-wrap" data-selection-search="class">
+                                <input class="character-input small-input selection-main" type="text" value="" placeholder="Класс" autocomplete="off" spellcheck="false" data-character-class>
+                                <div class="selection-dropdown"></div>
+                            </div>
                             <div class="selection-sub is-empty" data-subclass-wrap>
                                 <span class="selection-bracket">(</span>
-                                <select class="character-select small-input selection-sub-select" data-character-subclass>
-                                    <option value="">Подкласс</option>
-                                </select>
+                                <div class="selection-input-wrap" data-selection-search="subclass">
+                                    <input class="character-input small-input selection-sub-select" type="text" value="" placeholder="Подкласс" autocomplete="off" spellcheck="false" data-character-subclass>
+                                    <div class="selection-dropdown"></div>
+                                </div>
                                 <span class="selection-bracket">)</span>
                             </div>
-                            <input class="character-input small-input level-input" type="number" value="1" min="1" max="20" data-character-level>
                         </div>
                     </div>
                     <div class="field-box exp-box">
@@ -1274,32 +1775,56 @@
             <div class="abilities-column">
                 <div class="ability-box">
                     <div class="ability-name">Сила</div>
-                    <input class="ability-score-input" type="number" value="8" data-ability="str">
+                    <div class="stepper-control">
+                        <button class="stepper-btn" type="button" data-step-target="[data-ability='str']" data-step="-1">-</button>
+                        <input class="ability-score-input" type="number" value="8" data-ability="str">
+                        <button class="stepper-btn" type="button" data-step-target="[data-ability='str']" data-step="1">+</button>
+                    </div>
                     <input class="ability-mod-input" type="text" value="-1" data-ability-mod="str" readonly>
                 </div>
                 <div class="ability-box">
                     <div class="ability-name">Ловкость</div>
-                    <input class="ability-score-input" type="number" value="8" data-ability="dex">
+                    <div class="stepper-control">
+                        <button class="stepper-btn" type="button" data-step-target="[data-ability='dex']" data-step="-1">-</button>
+                        <input class="ability-score-input" type="number" value="8" data-ability="dex">
+                        <button class="stepper-btn" type="button" data-step-target="[data-ability='dex']" data-step="1">+</button>
+                    </div>
                     <input class="ability-mod-input" type="text" value="-1" data-ability-mod="dex" readonly>
                 </div>
                 <div class="ability-box">
                     <div class="ability-name">Телосложение</div>
-                    <input class="ability-score-input" type="number" value="8" data-ability="con">
+                    <div class="stepper-control">
+                        <button class="stepper-btn" type="button" data-step-target="[data-ability='con']" data-step="-1">-</button>
+                        <input class="ability-score-input" type="number" value="8" data-ability="con">
+                        <button class="stepper-btn" type="button" data-step-target="[data-ability='con']" data-step="1">+</button>
+                    </div>
                     <input class="ability-mod-input" type="text" value="-1" data-ability-mod="con" readonly>
                 </div>
                 <div class="ability-box">
                     <div class="ability-name">Интеллект</div>
-                    <input class="ability-score-input" type="number" value="8" data-ability="int">
+                    <div class="stepper-control">
+                        <button class="stepper-btn" type="button" data-step-target="[data-ability='int']" data-step="-1">-</button>
+                        <input class="ability-score-input" type="number" value="8" data-ability="int">
+                        <button class="stepper-btn" type="button" data-step-target="[data-ability='int']" data-step="1">+</button>
+                    </div>
                     <input class="ability-mod-input" type="text" value="-1" data-ability-mod="int" readonly>
                 </div>
                 <div class="ability-box">
                     <div class="ability-name">Мудрость</div>
-                    <input class="ability-score-input" type="number" value="8" data-ability="wis">
+                    <div class="stepper-control">
+                        <button class="stepper-btn" type="button" data-step-target="[data-ability='wis']" data-step="-1">-</button>
+                        <input class="ability-score-input" type="number" value="8" data-ability="wis">
+                        <button class="stepper-btn" type="button" data-step-target="[data-ability='wis']" data-step="1">+</button>
+                    </div>
                     <input class="ability-mod-input" type="text" value="-1" data-ability-mod="wis" readonly>
                 </div>
                 <div class="ability-box">
                     <div class="ability-name">Харизма</div>
-                    <input class="ability-score-input" type="number" value="8" data-ability="cha">
+                    <div class="stepper-control">
+                        <button class="stepper-btn" type="button" data-step-target="[data-ability='cha']" data-step="-1">-</button>
+                        <input class="ability-score-input" type="number" value="8" data-ability="cha">
+                        <button class="stepper-btn" type="button" data-step-target="[data-ability='cha']" data-step="1">+</button>
+                    </div>
                     <input class="ability-mod-input" type="text" value="-1" data-ability-mod="cha" readonly>
                 </div>
             </div>
@@ -1309,7 +1834,7 @@
                     <div class="combat-group">
                         <div class="combat-item">
                             <span class="combat-label">Класс брони</span>
-                            <input class="combat-number" type="text" value="">
+                            <input class="combat-number" type="text" value="9" data-armor-class-output readonly>
                         </div>
                         <div class="combat-item">
                             <span class="combat-label">Инициатива</span>
@@ -1317,22 +1842,21 @@
                         </div>
                         <div class="combat-item">
                             <span class="combat-label">Бонус мастерства</span>
-                            <input class="combat-number" type="text" value="">
+                            <input class="combat-number" type="text" value="+2" data-proficiency-output readonly>
                         </div>
                     </div>
                     <div class="combat-group wide">
                         <div class="combat-item">
                             <span class="combat-label">Скорость</span>
-                            <input class="combat-number" type="text" value="">
+                            <div class="combat-number combat-display" data-race-speed-output></div>
                         </div>
                         <div class="combat-item">
                             <span class="combat-label">Хиты</span>
-                            <input class="combat-number" type="text" value="">
-                            <input class="combat-note" type="text" value="">
+                            <input class="combat-number" type="text" value="" data-class-hit-points-output readonly>
                         </div>
                         <div class="combat-item">
                             <span class="combat-label">Кость хитов</span>
-                            <input class="combat-number" type="text" value="">
+                            <input class="combat-number" type="text" value="" data-class-hit-die-output readonly>
                         </div>
                     </div>
                 </div>
@@ -1351,30 +1875,30 @@
 
                         <div class="field-box skill-panel">
                             <div class="field-label">Навыки</div>
-                            <div class="skill-row" data-skill-ability="str" data-skill-name="skill-left-1"><span></span><input class="skill-name-input" type="text" value="Атлетика (Сил)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-left-1" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-left-1" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
-                            <div class="skill-row" data-skill-ability="dex" data-skill-name="skill-left-2"><span></span><input class="skill-name-input" type="text" value="Акробатика (Лов)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-left-2" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-left-2" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
-                            <div class="skill-row" data-skill-ability="dex" data-skill-name="skill-left-3"><span></span><input class="skill-name-input" type="text" value="Ловкость рук (Лов)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-left-3" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-left-3" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
-                            <div class="skill-row" data-skill-ability="dex" data-skill-name="skill-left-4"><span></span><input class="skill-name-input" type="text" value="Скрытность (Лов)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-left-4" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-left-4" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
-                            <div class="skill-row" data-skill-ability="int" data-skill-name="skill-left-5"><span></span><input class="skill-name-input" type="text" value="Анализ (Инт)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-left-5" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-left-5" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
-                            <div class="skill-row" data-skill-ability="int" data-skill-name="skill-left-6"><span></span><input class="skill-name-input" type="text" value="История (Инт)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-left-6" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-left-6" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
-                            <div class="skill-row" data-skill-ability="int" data-skill-name="skill-left-7"><span></span><input class="skill-name-input" type="text" value="Магия (Инт)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-left-7" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-left-7" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
-                            <div class="skill-row" data-skill-ability="int" data-skill-name="skill-left-8"><span></span><input class="skill-name-input" type="text" value="Природа (Инт)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-left-8" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-left-8" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="str" data-skill-name="skill-left-1"><span></span><input class="skill-name-input" type="text" value="Атлетика (Сил)"><span class="prof-controls"><label><input class="skill-check skill-prof" type="checkbox">Вл</label><label class="expertise-toggle"><input class="skill-check skill-expertise" type="checkbox">Комп</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="dex" data-skill-name="skill-left-2"><span></span><input class="skill-name-input" type="text" value="Акробатика (Лов)"><span class="prof-controls"><label><input class="skill-check skill-prof" type="checkbox">Вл</label><label class="expertise-toggle"><input class="skill-check skill-expertise" type="checkbox">Комп</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="dex" data-skill-name="skill-left-3"><span></span><input class="skill-name-input" type="text" value="Ловкость рук (Лов)"><span class="prof-controls"><label><input class="skill-check skill-prof" type="checkbox">Вл</label><label class="expertise-toggle"><input class="skill-check skill-expertise" type="checkbox">Комп</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="dex" data-skill-name="skill-left-4"><span></span><input class="skill-name-input" type="text" value="Скрытность (Лов)"><span class="prof-controls"><label><input class="skill-check skill-prof" type="checkbox">Вл</label><label class="expertise-toggle"><input class="skill-check skill-expertise" type="checkbox">Комп</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="int" data-skill-name="skill-left-5"><span></span><input class="skill-name-input" type="text" value="Анализ (Инт)"><span class="prof-controls"><label><input class="skill-check skill-prof" type="checkbox">Вл</label><label class="expertise-toggle"><input class="skill-check skill-expertise" type="checkbox">Комп</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="int" data-skill-name="skill-left-6"><span></span><input class="skill-name-input" type="text" value="История (Инт)"><span class="prof-controls"><label><input class="skill-check skill-prof" type="checkbox">Вл</label><label class="expertise-toggle"><input class="skill-check skill-expertise" type="checkbox">Комп</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="int" data-skill-name="skill-left-7"><span></span><input class="skill-name-input" type="text" value="Магия (Инт)"><span class="prof-controls"><label><input class="skill-check skill-prof" type="checkbox">Вл</label><label class="expertise-toggle"><input class="skill-check skill-expertise" type="checkbox">Комп</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="int" data-skill-name="skill-left-8"><span></span><input class="skill-name-input" type="text" value="Природа (Инт)"><span class="prof-controls"><label><input class="skill-check skill-prof" type="checkbox">Вл</label><label class="expertise-toggle"><input class="skill-check skill-expertise" type="checkbox">Комп</label></span><input class="skill-bonus-input" type="text" readonly></div>
                         </div>
                     </div>
 
                     <div class="right-skills">
                         <div class="field-box skill-panel">
                             <div class="field-label">Навыки</div>
-                            <div class="skill-row" data-skill-ability="int" data-skill-name="skill-right-1"><span></span><input class="skill-name-input" type="text" value="Религия (Инт)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-1" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-1" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
-                            <div class="skill-row" data-skill-ability="wis" data-skill-name="skill-right-2"><span></span><input class="skill-name-input" type="text" value="Восприятие (Муд)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-2" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-2" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
-                            <div class="skill-row" data-skill-ability="wis" data-skill-name="skill-right-3"><span></span><input class="skill-name-input" type="text" value="Выживание (Муд)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-3" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-3" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
-                            <div class="skill-row" data-skill-ability="wis" data-skill-name="skill-right-4"><span></span><input class="skill-name-input" type="text" value="Медицина (Муд)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-4" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-4" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
-                            <div class="skill-row" data-skill-ability="wis" data-skill-name="skill-right-5"><span></span><input class="skill-name-input" type="text" value="Проницательность (Муд)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-5" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-5" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
-                            <div class="skill-row" data-skill-ability="wis" data-skill-name="skill-right-6"><span></span><input class="skill-name-input" type="text" value="Уход за животными (Муд)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-6" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-6" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
-                            <div class="skill-row" data-skill-ability="cha" data-skill-name="skill-right-7"><span></span><input class="skill-name-input" type="text" value="Выступление (Хар)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-7" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-7" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
-                            <div class="skill-row" data-skill-ability="cha" data-skill-name="skill-right-8"><span></span><input class="skill-name-input" type="text" value="Запугивание (Хар)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-8" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-8" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
-                            <div class="skill-row" data-skill-ability="cha" data-skill-name="skill-right-9"><span></span><input class="skill-name-input" type="text" value="Обман (Хар)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-9" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-9" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
-                            <div class="skill-row" data-skill-ability="cha" data-skill-name="skill-right-10"><span></span><input class="skill-name-input" type="text" value="Убеждение (Хар)"><span class="prof-controls"><label><input class="prof-radio" type="radio" name="skill-right-10" value="1">+1</label><label><input class="prof-radio" type="radio" name="skill-right-10" value="2">+2</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="int" data-skill-name="skill-right-1"><span></span><input class="skill-name-input" type="text" value="Религия (Инт)"><span class="prof-controls"><label><input class="skill-check skill-prof" type="checkbox">Вл</label><label class="expertise-toggle"><input class="skill-check skill-expertise" type="checkbox">Комп</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="wis" data-skill-name="skill-right-2"><span></span><input class="skill-name-input" type="text" value="Восприятие (Муд)"><span class="prof-controls"><label><input class="skill-check skill-prof" type="checkbox">Вл</label><label class="expertise-toggle"><input class="skill-check skill-expertise" type="checkbox">Комп</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="wis" data-skill-name="skill-right-3"><span></span><input class="skill-name-input" type="text" value="Выживание (Муд)"><span class="prof-controls"><label><input class="skill-check skill-prof" type="checkbox">Вл</label><label class="expertise-toggle"><input class="skill-check skill-expertise" type="checkbox">Комп</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="wis" data-skill-name="skill-right-4"><span></span><input class="skill-name-input" type="text" value="Медицина (Муд)"><span class="prof-controls"><label><input class="skill-check skill-prof" type="checkbox">Вл</label><label class="expertise-toggle"><input class="skill-check skill-expertise" type="checkbox">Комп</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="wis" data-skill-name="skill-right-5"><span></span><input class="skill-name-input" type="text" value="Проницательность (Муд)"><span class="prof-controls"><label><input class="skill-check skill-prof" type="checkbox">Вл</label><label class="expertise-toggle"><input class="skill-check skill-expertise" type="checkbox">Комп</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="wis" data-skill-name="skill-right-6"><span></span><input class="skill-name-input" type="text" value="Уход за животными (Муд)"><span class="prof-controls"><label><input class="skill-check skill-prof" type="checkbox">Вл</label><label class="expertise-toggle"><input class="skill-check skill-expertise" type="checkbox">Комп</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="cha" data-skill-name="skill-right-7"><span></span><input class="skill-name-input" type="text" value="Выступление (Хар)"><span class="prof-controls"><label><input class="skill-check skill-prof" type="checkbox">Вл</label><label class="expertise-toggle"><input class="skill-check skill-expertise" type="checkbox">Комп</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="cha" data-skill-name="skill-right-8"><span></span><input class="skill-name-input" type="text" value="Запугивание (Хар)"><span class="prof-controls"><label><input class="skill-check skill-prof" type="checkbox">Вл</label><label class="expertise-toggle"><input class="skill-check skill-expertise" type="checkbox">Комп</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="cha" data-skill-name="skill-right-9"><span></span><input class="skill-name-input" type="text" value="Обман (Хар)"><span class="prof-controls"><label><input class="skill-check skill-prof" type="checkbox">Вл</label><label class="expertise-toggle"><input class="skill-check skill-expertise" type="checkbox">Комп</label></span><input class="skill-bonus-input" type="text" readonly></div>
+                            <div class="skill-row" data-skill-ability="cha" data-skill-name="skill-right-10"><span></span><input class="skill-name-input" type="text" value="Убеждение (Хар)"><span class="prof-controls"><label><input class="skill-check skill-prof" type="checkbox">Вл</label><label class="expertise-toggle"><input class="skill-check skill-expertise" type="checkbox">Комп</label></span><input class="skill-bonus-input" type="text" readonly></div>
                         </div>
 
                         <div class="info-under-skills">
@@ -1432,7 +1956,7 @@
 
         <div class="field-box" style="margin: 12px 0;">
             <div class="field-label">Языки, сопротивления, владения</div>
-            <textarea class="editable-area"></textarea>
+            <textarea class="editable-area" data-race-traits-output></textarea>
         </div>
 
         <div class="footer-inventory">
@@ -1736,6 +2260,7 @@
             </div>
         </div>
     </div>
+    <button class="page-reset-button" type="button">Сбросить лист</button>
     <datalist id="weapon-list-0"></datalist>
     <datalist id="weapon-list-1"></datalist>
     <datalist id="weapon-list-2"></datalist>
@@ -1779,6 +2304,8 @@
             19: 355000,
             20: 355000
         };
+        const PAGE_STATE_KEY = "interactiveCharacterSheetState";
+        const MUSIC_WIDGET_STATE_KEY = "interactiveCharacterSheetMusicWidgetCollapsed";
         const CHARACTER_KNOWLEDGE = {
             races: [
                 { name: "Ааракокра", source: "POA / MPMM", subraces: [] },
@@ -1789,13 +2316,12 @@
                 { name: "Астральный эльф", source: "SAS", subraces: [] },
                 { name: "Багбир", source: "VGM / MPMM", subraces: [] },
                 { name: "Вапитианец", source: "HB", subraces: [] },
-                { name: "Вегепигмей", source: "HB:SC / HB", subraces: [] },
                 { name: "Ведалкен", source: "GGR", subraces: [] },
                 { name: "Вердан", source: "AI", subraces: [] },
                 { name: "Ведьмовская кровь", source: "VRGR", subraces: [] },
                 { name: "Возрождённый", source: "VRGR", subraces: [] },
                 { name: "Гибрид Симиков", source: "GGR", subraces: [] },
-                { name: "Гит", source: "MTF", subraces: ["Гитъянки", "Гитцерай", "Гитзерай"] },
+                { name: "Гит", source: "MTF", subraces: ["Гитъянки", "Гитцерай"] },
                 { name: "Гитъянки", source: "MPMM", subraces: [] },
                 { name: "Гитцерай", source: "MPMM", subraces: [] },
                 { name: "Гифф", source: "SAS", subraces: [] },
@@ -1805,8 +2331,8 @@
                 { name: "Гнолл", source: "HB:MHH / HB", subraces: [] },
                 { name: "Гном", source: "PH14 / HB:MHH / HB", subraces: ["Лесной", "Скальный", "Глубинный", "Ледяной", "Кроткий", "Чумной", "Озерный", "Пустынный", "Теневой", "Кристальный", "Речной", "Огненный", "Грибной"] },
                 { name: "Гоббок", source: "HB:HGMH / HB", subraces: [] },
-                { name: "Гоблин", source: "VGM / MPMM", subraces: [] },
                 { name: "Голинн", source: "HB:HGMH / HB", subraces: [] },
+                { name: "Гоблин", source: "VGM / MPMM", subraces: [] },
                 { name: "Голиаф", source: "VGM / MPMM", subraces: [] },
                 { name: "Грацеза", source: "HB:MF / HB", subraces: [] },
                 { name: "Грунг", source: "OGA", subraces: [] },
@@ -1816,7 +2342,6 @@
                 { name: "Драконорождённый", source: "PH14", subraces: ["Драконокровный", "Равенит", "Хроматический", "Металлический", "Драгоценный", "Чёрный", "Синий", "Зелёный", "Красный", "Белый", "Латунный", "Бронзовый", "Медный", "Золотой", "Серебряный", "Аметистовый", "Изумрудный", "Сапфировый", "Топазовый", "Хрустальный", "Лунный", "Солнечный", "Теневой", "Штормовой"] },
                 { name: "Древан", source: "HB:MF / HB", subraces: [] },
                 { name: "Дуэргар", source: "MPMM", subraces: [] },
-                { name: "Живой конструкт", source: "RLW", subraces: [] },
                 { name: "Зайцегон", source: "WBW / MPMM", subraces: [] },
                 { name: "Зиморождённые полурослики", source: "HB:MHH / HB", subraces: [] },
                 { name: "Исэцу", source: "HB:RGYR / HB", subraces: [] },
@@ -1847,47 +2372,7 @@
                 { name: "Мицелиан", source: "HB:HGMH / HB", subraces: [] },
                 { name: "Морской эльф", source: "MPMM", subraces: [] },
                 { name: "Мышинец", source: "HB:MF / HB", subraces: [] },
-                { name: "Нагпа", source: "HB", subraces: [] },
-                { name: "Нагаджи", source: "HB", subraces: [] },
                 { name: "Нага", source: "PS:A / HB", subraces: [] },
-                { name: "Некрофаг", source: "HB", subraces: [] },
-                { name: "Ноктюрн", source: "HB", subraces: [] },
-                { name: "Нэко", source: "HB:RGYR / HB", subraces: [] },
-                { name: "Обитатель глубин", source: "HB:SGEH / HB", subraces: [] },
-                { name: "Обсидианец", source: "HB", subraces: [] },
-                { name: "Огрин", source: "HB", subraces: [] },
-                { name: "Огриллион", source: "HB", subraces: [] },
-                { name: "Оддлинг", source: "HB", subraces: [] },
-                { name: "Окаами", source: "HB:RGYR / HB", subraces: [] },
-                { name: "Ониксит", source: "HB", subraces: [] },
-                { name: "Оркоголовый", source: "HB", subraces: [] },
-                { name: "Осадный гоблин", source: "HB", subraces: [] },
-                { name: "Отмеченный драконом", source: "RLW", subraces: ["Выявления", "Исцеления", "Нахождения", "Обнаружения", "Писания", "Созидания", "Стражи", "Теней", "Штормов"] },
-                { name: "Офидий", source: "HB", subraces: [] },
-                { name: "Падший архонт", source: "HB", subraces: [] },
-                { name: "Пепельный", source: "HB", subraces: [] },
-                { name: "Первородный", source: "HB", subraces: [] },
-                { name: "Песчаник", source: "HB", subraces: [] },
-                { name: "Пикси", source: "HB / WBW", subraces: [] },
-                { name: "Погребённый", source: "HB", subraces: [] },
-                { name: "Подменыш", source: "RLW / MPMM", subraces: [] },
-                { name: "Ползущий", source: "HB", subraces: [] },
-                { name: "Порождённый бурей", source: "HB", subraces: [] },
-                { name: "Порождённый звёздами", source: "HB", subraces: [] },
-                { name: "Порождённый пустотой", source: "HB", subraces: [] },
-                { name: "Порождение бездны", source: "HB", subraces: [] },
-                { name: "Порождение дракона", source: "HB", subraces: [] },
-                { name: "Порождение луны", source: "HB", subraces: [] },
-                { name: "Порождение пламени", source: "HB", subraces: [] },
-                { name: "Потомок великана", source: "HB", subraces: ["Облачный", "Огненный", "Каменный", "Морозный", "Холмовой", "Штормовой"] },
-                { name: "Потомок гарпии", source: "HB", subraces: [] },
-                { name: "Потомок гидры", source: "HB", subraces: [] },
-                { name: "Потомок медузы", source: "HB", subraces: [] },
-                { name: "Потомок минотавра", source: "HB", subraces: [] },
-                { name: "Потомок феникса", source: "HB", subraces: [] },
-                { name: "Псоглавец", source: "HB", subraces: [] },
-                { name: "Пустотник", source: "HB", subraces: [] },
-                { name: "Пыльный", source: "HB", subraces: [] },
                 { name: "Нисикин", source: "HB:RGYR / HB", subraces: [] },
                 { name: "Омбраск", source: "HB:HGMH / HB", subraces: [] },
                 { name: "Онирождённый", source: "HB:RGYR / HB", subraces: [] },
@@ -1903,7 +2388,7 @@
                 { name: "Ревенант", source: "UA / HB", subraces: [] },
                 { name: "Рюдзин", source: "HB:RGYR / HB", subraces: [] },
                 { name: "Сатир", source: "MOT / MPMM", subraces: [] },
-                { name: "Свое происхождение", source: "TCE", subraces: [] },
+                { name: "Своё происхождение", source: "TCE", subraces: [] },
                 { name: "Сильва", source: "HB:SC / HB", subraces: [] },
                 { name: "Склизыш", source: "HB:MF / HB", subraces: [] },
                 { name: "Слизевик", source: "HB:HGMH / HB", subraces: [] },
@@ -1918,7 +2403,6 @@
                 { name: "Тортл", source: "TP / MPMM", subraces: [] },
                 { name: "Три-крин", source: "SAS", subraces: [] },
                 { name: "Тритон", source: "VGM / MPMM", subraces: [] },
-                { name: "Троллеобразный", source: "HB:MHH / HB", subraces: [] },
                 { name: "Тэнгу", source: "HB:RGYR / HB", subraces: [] },
                 { name: "Фирболг", source: "VGM / MPMM", subraces: [] },
                 { name: "Флорен", source: "HB:CN / HB", subraces: [] },
@@ -1930,63 +2414,16 @@
                 { name: "Хенра", source: "PS:A / HB", subraces: [] },
                 { name: "Хобгоблин", source: "VGM / MPMM", subraces: [] },
                 { name: "Хобгоблин из Страны Фей", source: "UA / HB", subraces: [] },
-                { name: "Ракшасаборн", source: "HB", subraces: [] },
-                { name: "Рататоск", source: "HB", subraces: [] },
-                { name: "Рогатый", source: "HB", subraces: [] },
-                { name: "Ройный", source: "HB", subraces: [] },
-                { name: "Рунорожденный", source: "HB", subraces: [] },
-                { name: "Рыбочеловек", source: "HB", subraces: [] },
-                { name: "Сауриал", source: "HB", subraces: [] },
-                { name: "Светоч", source: "HB", subraces: [] },
-                { name: "Селки", source: "HB", subraces: [] },
-                { name: "Серафим", source: "HB", subraces: [] },
-                { name: "Сирена", source: "HB", subraces: [] },
-                { name: "Скарабеан", source: "HB", subraces: [] },
-                { name: "Скелетонец", source: "HB", subraces: [] },
-                { name: "Скорпионец", source: "HB", subraces: [] },
-                { name: "Сливер", source: "HB", subraces: [] },
-                { name: "Снежнорожденный", source: "HB", subraces: [] },
-                { name: "Согбенный", source: "HB", subraces: [] },
-                { name: "Созданный из тени", source: "HB", subraces: [] },
-                { name: "Солнечнорождённый", source: "HB", subraces: [] },
-                { name: "Спрайт", source: "HB / WBW", subraces: [] },
-                { name: "Сфинксокровный", source: "HB", subraces: [] },
-                { name: "Тануки", source: "HB:RGYR / HB", subraces: [] },
-                { name: "Тенерождённый", source: "HB", subraces: [] },
-                { name: "Техноид", source: "HB", subraces: [] },
-                { name: "Тлеющий призрак", source: "HB", subraces: [] },
-                { name: "Тотемник", source: "HB", subraces: [] },
-                { name: "Туманник", source: "HB", subraces: [] },
-                { name: "Ульм", source: "HB", subraces: [] },
-                { name: "Ундина", source: "HB", subraces: [] },
-                { name: "Фантомец", source: "HB", subraces: [] },
-                { name: "Фелис", source: "HB", subraces: [] },
-                { name: "Фоморианец", source: "HB", subraces: [] },
-                { name: "Халфдракон", source: "HB", subraces: [] },
-                { name: "Химераборн", source: "HB", subraces: [] },
-                { name: "Хоб", source: "HB", subraces: [] },
-                { name: "Хтонец", source: "HB", subraces: [] },
                 { name: "Циклопианец", source: "HB:HGMH / HB", subraces: [] },
-                { name: "Целестиал", source: "HB", subraces: [] },
-                { name: "Часовой", source: "HB", subraces: [] },
-                { name: "Человек", source: "PH14 / PS:A / HB", subraces: ["Вариант", "Обычный", "Каламаранский", "Иннистрадский", "Мидгардский", "Муэрский", "Нарский", "Шоу", "Тетирский", "Халруанский", "Калишитский", "Чондатанский", "Иллусканский", "Дамарский", "Рашеменский", "Турамийский", "Мулани"] },
                 { name: "Чейнджлинг", source: "RLW / MPMM", subraces: [] },
-                { name: "Чернильный", source: "HB", subraces: [] },
-                { name: "Шакалит", source: "HB", subraces: [] },
+                { name: "Человек", source: "PH14 / PS:A / HB", subraces: ["Вариант", "Обычный", "Каламаранский", "Иннистрадский", "Мидгардский", "Муэрский", "Нарский", "Шоу", "Тетирский", "Халруанский", "Калишитский", "Чондатанский", "Иллусканский", "Дамарский", "Рашеменский", "Турамийский", "Мулани"] },
                 { name: "Шадар-кай", source: "MPMM", subraces: [] },
-                { name: "Шепчущий", source: "HB", subraces: [] },
                 { name: "Шифтер", source: "RLW / MPMM", subraces: ["Быстроногий", "Дикоклык", "Когтеброд", "Острозуб", "Сумеречный", "Длинношагий", "Ночеглазый", "Быстрокоготь", "Долгозуб", "Дикоступ", "Лесной"] },
-                { name: "Шторморождённый", source: "HB", subraces: [] },
                 { name: "Эладрин", source: "MPMM", subraces: ["Весна", "Лето", "Осень", "Зима", "Сумерки", "Рассвет", "Полдень"] },
                 { name: "Эльф", source: "PH14 / HB:MHH / HB", subraces: ["Высший", "Древесный", "Тёмный (дроу)", "Морской", "Астральный", "Шадар-кай", "Эладрин", "Палид", "Лунный", "Солнечный", "Звёздный", "Дикий", "Снежный", "Теневой", "Пустынный", "Небесный", "Коралловый", "Авариэль", "Груугаш", "Сильванести", "Квалинести"] },
-                { name: "Эфирный", source: "HB", subraces: [] },
-                { name: "Эхо-рождённый", source: "HB", subraces: [] },
-                { name: "Юки-онна", source: "HB:RGYR / HB", subraces: [] },
                 { name: "Энкох", source: "HB:RGYR / HB", subraces: [] },
-                { name: "Янтарный", source: "HB", subraces: [] },
                 { name: "Юань-ти", source: "VGM / MPMM", subraces: [] }
-            ],
-            classes: [
+            ],            classes: [
                 { name: "Варвар", source: "PHB", subclasses: ["Путь берсерка", "Путь тотемного воина", "Путь предков-защитников", "Путь бури", "Путь фанатика", "Путь дикого волшебства", "Путь зверя"] },
                 { name: "Бард", source: "PHB", subclasses: ["Коллегия знаний", "Коллегия храбрости", "Коллегия очарования", "Коллегия мечей", "Коллегия шёпотов", "Коллегия красноречия", "Коллегия созидания"] },
                 { name: "Жрец", source: "PHB", subclasses: ["Домен жизни", "Домен света", "Домен войны", "Домен обмана", "Домен знания", "Домен природы", "Домен бури", "Домен кузницы", "Домен смерти", "Домен могилы", "Домен порядка", "Домен мира", "Домен сумерек", "Мистический домен"] },
@@ -2286,11 +2723,318 @@
                 { name: "Книга мерзкой тьмы", itemType: "Артефакт", rarity: "Артефакт", attunement: "Нет", notes: "Мрачный уникальный том" }
             ]
         };
+        const RACE_TRAITS = {
+            "Ааракокра": {
+                speed: "25 футов, полет 50 футов",
+                languages: ["Общий", "Ауран"]
+            },
+            "Аасимар": {
+                speed: "30 футов",
+                languages: ["Общий", "Небесный"],
+                resistances: ["некротический", "сияние"]
+            },
+            "Автогном": {
+                speed: "30 футов",
+                languages: ["Общий", "ещё один на выбор"]
+            },
+            "Астральный эльф": {
+                speed: "30 футов",
+                languages: ["Общий", "Эльфийский", "ещё один на выбор"]
+            },
+            "Багбир": {
+                speed: "30 футов",
+                languages: ["Общий", "Гоблинский"]
+            },
+            "Ведалкен": {
+                speed: "30 футов",
+                languages: ["Общий", "Ведалкенский"]
+            },
+            "Вердан": {
+                speed: "30 футов",
+                languages: ["Общий", "Гоблинский"]
+            },
+            "Ведьмовская кровь": {
+                speed: "30 футов",
+                languages: ["Общий", "ещё один на выбор"]
+            },
+            "Возрождённый": {
+                speed: "30 футов",
+                languages: ["Общий", "ещё один на выбор"]
+            },
+            "Гит": {
+                speed: "30 футов",
+                languages: ["Общий", "Гит"],
+                subraces: {
+                    "Гитъянки": { languages: ["Общий", "Гит"] },
+                    "Гитцерай": { languages: ["Общий", "Гит"] }
+                }
+            },
+            "Гитъянки": {
+                speed: "30 футов",
+                languages: ["Общий", "Гит"]
+            },
+            "Гитцерай": {
+                speed: "30 футов",
+                languages: ["Общий", "Гит"]
+            },
+            "Гифф": {
+                speed: "30 футов",
+                languages: ["Общий", "ещё один на выбор"]
+            },
+            "Глубинный гном": {
+                speed: "25 футов",
+                languages: ["Общий", "Гномий", "Подземный"]
+            },
+            "Гном": {
+                speed: "25 футов",
+                languages: ["Общий", "Гномий"]
+            },
+            "Гоблин": {
+                speed: "30 футов",
+                languages: ["Общий", "Гоблинский"]
+            },
+            "Голиаф": {
+                speed: "30 футов",
+                languages: ["Общий", "Великаний"]
+            },
+            "Грунг": {
+                speed: "25 футов",
+                languages: ["Грунг"],
+                resistances: ["яд"]
+            },
+            "Дампир": {
+                speed: "35 футов",
+                languages: ["Общий", "ещё один на выбор"]
+            },
+            "Дварф": {
+                speed: "25 футов",
+                languages: ["Общий", "Дварфийский"],
+                resistances: ["яд"],
+                proficiencies: ["боевой топор", "ручной топор", "лёгкий молот", "боевой молот"]
+            },
+            "Дуэргар": {
+                speed: "25 футов",
+                languages: ["Общий", "Дварфийский", "Подземный"],
+                resistances: ["яд"]
+            },
+            "Дженази": {
+                speed: "30 футов",
+                languages: ["Общий", "Первичный"],
+                subraces: {
+                    "Воздуха": { resistances: ["электричество"] },
+                    "Воды": { resistances: ["кислота"] },
+                    "Земли": { notes: ["Устойчивость зависит от версии источника"] },
+                    "Огня": { resistances: ["огонь"] },
+                    "Молнии": { resistances: ["электричество"] },
+                    "Магмы": { resistances: ["огонь"] },
+                    "Пепла": { resistances: ["огонь"] }
+                }
+            },
+            "Драконорождённый": {
+                speed: "30 футов",
+                languages: ["Общий", "Драконий"],
+                notes: ["Сопротивление зависит от драконьего наследия"],
+                subraces: {
+                    "Хроматический": { languages: ["Общий", "ещё один на выбор"] },
+                    "Металлический": { languages: ["Общий", "ещё один на выбор"] },
+                    "Драгоценный": { languages: ["Общий", "ещё один на выбор"] },
+                    "Равенит": { languages: ["Общий", "Драконий"] },
+                    "Драконокровный": { languages: ["Общий", "Драконий"] },
+                    "Чёрный": { resistances: ["кислота"] },
+                    "Медный": { resistances: ["кислота"] },
+                    "Синий": { resistances: ["электричество"] },
+                    "Бронзовый": { resistances: ["электричество"] },
+                    "Зелёный": { resistances: ["яд"] },
+                    "Красный": { resistances: ["огонь"] },
+                    "Латунный": { resistances: ["огонь"] },
+                    "Золотой": { resistances: ["огонь"] },
+                    "Белый": { resistances: ["холод"] },
+                    "Серебряный": { resistances: ["холод"] },
+                    "Аметистовый": { resistances: ["силовое"] },
+                    "Изумрудный": { resistances: ["психический"] },
+                    "Сапфировый": { resistances: ["гром"] },
+                    "Топазовый": { resistances: ["некротический"] },
+                    "Хрустальный": { resistances: ["сияние"] }
+                }
+            },
+            "Кованый": {
+                speed: "30 футов",
+                languages: ["Общий", "ещё один на выбор"]
+            },
+            "Зайцегон": {
+                speed: "30 футов",
+                languages: ["Общий", "ещё один на выбор"]
+            },
+            "Калаштар": {
+                speed: "30 футов",
+                languages: ["Общий", "Квори", "ещё один на выбор"]
+            },
+            "Кендер": {
+                speed: "30 футов",
+                languages: ["Общий", "Кендерский"]
+            },
+            "Кенку": {
+                speed: "30 футов",
+                languages: ["Общий", "Ауран"]
+            },
+            "Кентавр": {
+                speed: "40 футов",
+                languages: ["Общий", "Сильван"]
+            },
+            "Кобольд": {
+                speed: "30 футов",
+                languages: ["Общий", "Драконий"]
+            },
+            "Леонин": {
+                speed: "35 футов",
+                languages: ["Общий", "Леонинский"]
+            },
+            "Локсодон": {
+                speed: "30 футов",
+                languages: ["Общий", "Локсодонский"]
+            },
+            "Людоящер": {
+                speed: "30 футов, плавание 30 футов",
+                languages: ["Общий", "Драконий"]
+            },
+            "Минотавр": {
+                speed: "30 футов",
+                languages: ["Общий", "Минотаврский"]
+            },
+            "Морской эльф": {
+                speed: "30 футов, плавание 30 футов",
+                languages: ["Общий", "Эльфийский", "Акван"]
+            },
+            "Орк": {
+                speed: "30 футов",
+                languages: ["Общий", "Орочий"]
+            },
+            "Плазмоид": {
+                speed: "30 футов",
+                languages: ["Общий", "ещё один на выбор"]
+            },
+            "Чейнджлинг": {
+                speed: "30 футов",
+                languages: ["Общий", "ещё два на выбор"]
+            },
+            "Полуорк": {
+                speed: "30 футов",
+                languages: ["Общий", "Орочий"]
+            },
+            "Полуэльф": {
+                speed: "30 футов",
+                languages: ["Общий", "Эльфийский", "ещё один на выбор"]
+            },
+            "Полурослик": {
+                speed: "25 футов",
+                languages: ["Общий", "Полуросликов"]
+            },
+            "Сатир": {
+                speed: "35 футов",
+                languages: ["Общий", "Сильван"],
+                notes: ["Имеет преимущество против магических эффектов"]
+            },
+            "Табакси": {
+                speed: "30 футов",
+                languages: ["Общий", "ещё один на выбор"]
+            },
+            "Тифлинг": {
+                speed: "30 футов",
+                languages: ["Общий", "Инфернальный"],
+                resistances: ["огонь"]
+            },
+            "Тортл": {
+                speed: "30 футов",
+                languages: ["Общий", "Акван"]
+            },
+            "Три-крин": {
+                speed: "30 футов",
+                languages: ["Общий", "Три-кринский"]
+            },
+            "Тритон": {
+                speed: "30 футов, плавание 30 футов",
+                languages: ["Общий", "Первичный"]
+            },
+            "Фирболг": {
+                speed: "30 футов",
+                languages: ["Общий", "Эльфийский", "Великаний"]
+            },
+            "Фэйри": {
+                speed: "30 футов, полет равен скорости",
+                languages: ["Общий", "Сильван"]
+            },
+            "Хадози": {
+                speed: "30 футов",
+                languages: ["Общий", "ещё один на выбор"]
+            },
+            "Хобгоблин": {
+                speed: "30 футов",
+                languages: ["Общий", "Гоблинский"]
+            },
+            "Человек": {
+                speed: "30 футов",
+                languages: ["Общий", "ещё один на выбор"]
+            },
+            "Шифтер": {
+                speed: "30 футов",
+                languages: ["Общий", "ещё один на выбор"]
+            },
+            "Эльф": {
+                speed: "30 футов",
+                languages: ["Общий", "Эльфийский"],
+                subraces: {
+                    "Лесной": { speed: "35 футов" },
+                    "Морской": { speed: "30 футов, плавание 30 футов", languages: ["Общий", "Эльфийский", "Акван"] }
+                }
+            },
+            "Эладрин": {
+                speed: "30 футов",
+                languages: ["Общий", "Эльфийский"]
+            },
+            "Юань-ти": {
+                speed: "30 футов",
+                languages: ["Общий", "Бездонный", "Драконий"],
+                resistances: ["яд"]
+            }
+        };
+        const CLASS_HIT_DICE = {
+            "Варвар": 12,
+            "Бард": 8,
+            "Жрец": 8,
+            "Друид": 8,
+            "Воин": 10,
+            "Монах": 8,
+            "Паладин": 10,
+            "Следопыт": 10,
+            "Плут": 8,
+            "Чародей": 6,
+            "Колдун": 8,
+            "Волшебник": 6,
+            "Изобретатель": 8
+        };
         let KNOWLEDGE_BASE = null;
+        let isRestoringPageState = false;
 
         function formatModifier(value) {
             if (value > 0) return `+${value}`;
             return String(value);
+        }
+
+        function normalizeKnownValue(value, options) {
+            const normalized = normalizeLookupName(value || "");
+            const match = options.find((option) => normalizeLookupName(option) === normalized);
+            return match || "";
+        }
+
+        function applyMusicWidgetState() {
+            const widget = document.querySelector("[data-music-widget]");
+            const button = document.querySelector("[data-music-toggle]");
+            if (!widget || !button) return;
+
+            const collapsed = localStorage.getItem(MUSIC_WIDGET_STATE_KEY) === "1";
+            widget.classList.toggle("is-collapsed", collapsed);
+            button.textContent = collapsed ? "+" : "−";
+            button.setAttribute("aria-expanded", collapsed ? "false" : "true");
         }
 
         function getAbilityScores() {
@@ -2347,20 +3091,12 @@
         }
 
         function populateRaceOptions() {
-            const select = document.querySelector("[data-character-race]");
-            if (!select) return;
+            const input = document.querySelector("[data-character-race]");
+            if (!input) return;
 
-            const current = select.value;
-            const options = ['<option value="">Раса</option>']
-                .concat(
-                    CHARACTER_KNOWLEDGE.races.map(
-                        (item) => `<option value="${item.name}">${item.name}</option>`
-                    )
-                )
-                .join("");
-
-            select.innerHTML = options;
-            select.value = CHARACTER_KNOWLEDGE.races.some((item) => item.name === current) ? current : "";
+            const current = input.value;
+            input.value = CHARACTER_KNOWLEDGE.races.some((item) => item.name === current) ? current : "";
+            renderSelectionDropdown(input);
         }
 
         function updateSubraceOptions() {
@@ -2373,31 +3109,142 @@
             const currentSubrace = subraceSelect.value;
             const raceData = CHARACTER_KNOWLEDGE.races.find((item) => item.name === currentRace);
             const subraces = raceData ? raceData.subraces : [];
-
-            subraceSelect.innerHTML = ['<option value="">Подраса</option>']
-                .concat(subraces.map((name) => `<option value="${name}">${name}</option>`))
-                .join("");
-
             subraceSelect.value = subraces.includes(currentSubrace) ? currentSubrace : "";
             subraceWrap.classList.toggle("is-empty", !subraceSelect.value);
             subraceSelect.disabled = !subraces.length;
+            subraceSelect.closest(".selection-input-wrap")?.classList.toggle("is-disabled", !subraces.length);
+            renderSelectionDropdown(subraceSelect);
+        }
+
+        function asTraitList(value) {
+            if (!value) return [];
+            return Array.isArray(value) ? value.filter(Boolean) : [value];
+        }
+
+        function mergeTraitLists(baseValue, overrideValue) {
+            return Array.from(new Set([...asTraitList(baseValue), ...asTraitList(overrideValue)]));
+        }
+
+        function getRaceTraitData() {
+            const race = document.querySelector("[data-character-race]")?.value || "";
+            const subrace = document.querySelector("[data-character-subrace]")?.value || "";
+            const base = RACE_TRAITS[race];
+            if (!base) {
+                return {
+                    speed: "",
+                    languages: [],
+                    resistances: [],
+                    proficiencies: [],
+                    notes: []
+                };
+            }
+
+            const override = subrace && base.subraces ? (base.subraces[subrace] || {}) : {};
+
+            return {
+                speed: override.speed || base.speed || "",
+                languages: mergeTraitLists(base.languages, override.languages),
+                resistances: mergeTraitLists(base.resistances, override.resistances),
+                proficiencies: mergeTraitLists(base.proficiencies, override.proficiencies),
+                notes: mergeTraitLists(base.notes, override.notes)
+            };
+        }
+
+        function formatRaceTraitsText(traits) {
+            const lines = [];
+
+            if (traits.languages.length) {
+                lines.push(`Языки: ${traits.languages.join(", ")}`);
+            }
+
+            if (traits.resistances.length) {
+                lines.push(`Сопротивления: ${traits.resistances.join(", ")}`);
+            }
+
+            if (traits.proficiencies.length) {
+                lines.push(`Владения: ${traits.proficiencies.join(", ")}`);
+            }
+
+            if (traits.notes.length) {
+                lines.push(`Примечание: ${traits.notes.join("; ")}`);
+            }
+
+            return lines.join("\n");
+        }
+
+        function formatRaceSpeedDisplay(speedText) {
+            const raw = String(speedText || "").trim();
+            if (!raw) return "";
+
+            const firstPart = raw.split(",")[0].trim();
+            const firstNumber = firstPart.match(/\d+/);
+            if (firstNumber) {
+                return `${firstNumber[0]} фт.`;
+            }
+
+            return firstPart
+                .replace(/фут(?:ов|а)?/gi, "фт.")
+                .replace(/\s+/g, " ")
+                .trim();
+        }
+
+        function setAutoManagedTextareaValue(field, nextAutoValue) {
+            if (!field) return;
+
+            let previousAutoValue = field.dataset.autoValue || "";
+            if (!previousAutoValue && nextAutoValue && field.value.startsWith(nextAutoValue)) {
+                previousAutoValue = nextAutoValue;
+            }
+            let manualPart = field.value.trim();
+
+            if (previousAutoValue && field.value.startsWith(previousAutoValue)) {
+                manualPart = field.value.slice(previousAutoValue.length).replace(/^\s+/, "");
+            }
+
+            const pieces = [];
+            if (nextAutoValue) pieces.push(nextAutoValue);
+            if (manualPart.trim()) pieces.push(manualPart.trim());
+
+            field.dataset.autoValue = nextAutoValue;
+            field.value = pieces.join("\n\n");
+        }
+
+        function applyRaceTraits() {
+            const traits = getRaceTraitData();
+            const speedOutput = document.querySelector("[data-race-speed-output]");
+            const traitsOutput = document.querySelector("[data-race-traits-output]");
+
+            if (speedOutput) {
+                speedOutput.textContent = formatRaceSpeedDisplay(traits.speed);
+            }
+
+            if (traitsOutput) {
+                setAutoManagedTextareaValue(traitsOutput, formatRaceTraitsText(traits));
+            }
+        }
+
+        function applyClassVitals() {
+            const className = document.querySelector("[data-character-class]")?.value || "";
+            const hitDie = CLASS_HIT_DICE[className] || 0;
+            const hitDieOutput = document.querySelector("[data-class-hit-die-output]");
+            const hitPointsOutput = document.querySelector("[data-class-hit-points-output]");
+
+            if (hitDieOutput) {
+                hitDieOutput.value = hitDie ? `1к${hitDie}` : "";
+            }
+
+            if (hitPointsOutput) {
+                hitPointsOutput.value = hitDie ? String(hitDie) : "";
+            }
         }
 
         function populateClassOptions() {
-            const select = document.querySelector("[data-character-class]");
-            if (!select) return;
+            const input = document.querySelector("[data-character-class]");
+            if (!input) return;
 
-            const current = select.value;
-            const options = ['<option value="">Класс</option>']
-                .concat(
-                    CHARACTER_KNOWLEDGE.classes.map(
-                        (item) => `<option value="${item.name}">${item.name}</option>`
-                    )
-                )
-                .join("");
-
-            select.innerHTML = options;
-            select.value = CHARACTER_KNOWLEDGE.classes.some((item) => item.name === current) ? current : "";
+            const current = input.value;
+            input.value = CHARACTER_KNOWLEDGE.classes.some((item) => item.name === current) ? current : "";
+            renderSelectionDropdown(input);
         }
 
         function updateSubclassOptions() {
@@ -2410,14 +3257,19 @@
             const currentSubclass = subclassSelect.value;
             const classData = CHARACTER_KNOWLEDGE.classes.find((item) => item.name === currentClass);
             const subclasses = classData ? classData.subclasses : [];
-
-            subclassSelect.innerHTML = ['<option value="">Подкласс</option>']
-                .concat(subclasses.map((name) => `<option value="${name}">${name}</option>`))
-                .join("");
-
             subclassSelect.value = subclasses.includes(currentSubclass) ? currentSubclass : "";
             subclassWrap.classList.toggle("is-empty", !subclassSelect.value);
             subclassSelect.disabled = !subclasses.length;
+            subclassSelect.closest(".selection-input-wrap")?.classList.toggle("is-disabled", !subclasses.length);
+            renderSelectionDropdown(subclassSelect);
+        }
+
+        function getProficiencyBonus(level) {
+            if (level >= 17) return 6;
+            if (level >= 13) return 5;
+            if (level >= 9) return 4;
+            if (level >= 5) return 3;
+            return 2;
         }
 
         function updateExperienceDisplay() {
@@ -2444,14 +3296,764 @@
             experienceCurrent.value = digits;
         }
 
+        function applyDefaultPlaceholders() {
+            document
+                .querySelectorAll('textarea:not([readonly]), input[type="text"]:not([readonly])')
+                .forEach((field) => {
+                    if (
+                        field.matches(".lookup-name, .skill-name-input, .skill-bonus-input, .ability-mod-input") ||
+                        field.matches("[data-experience-current], [data-initiative-output], [data-save-output], [data-passive-output]") ||
+                        field.placeholder
+                    ) {
+                        return;
+                    }
+
+                    field.placeholder = "Введите текст";
+                });
+        }
+
+        function normalizeSaveLabels() {
+            const saveLabels = {
+                str: "Сила",
+                dex: "Ловкость",
+                con: "Телосложение",
+                int: "Интеллект",
+                wis: "Мудрость",
+                cha: "Харизма"
+            };
+
+            document.querySelectorAll(".save-row").forEach((row) => {
+                const checkbox = row.querySelector(".save-prof");
+                const nameInput = row.querySelector(".skill-name-input");
+                if (!checkbox || !nameInput) return;
+
+                const ability = checkbox.dataset.abilityRef;
+                const label = saveLabels[ability];
+                if (!label) return;
+
+                nameInput.value = label;
+                nameInput.readOnly = true;
+            });
+        }
+
         function populateDataList(id, items) {
-            let datalist = document.getElementById(id);
-            if (!datalist) {
-                datalist = document.createElement("datalist");
-                datalist.id = id;
-                document.body.appendChild(datalist);
+            return { id, items };
+        }
+
+        function getSelectionSearchOptions(input) {
+            if (!input) return [];
+
+            if (input.matches("[data-character-race]")) {
+                return CHARACTER_KNOWLEDGE.races.map((item) => item.name);
             }
-            datalist.innerHTML = items.map((item) => `<option value="${item.name}"></option>`).join("");
+
+            if (input.matches("[data-character-subrace]")) {
+                const raceName = document.querySelector("[data-character-race]")?.value || "";
+                const raceData = CHARACTER_KNOWLEDGE.races.find((item) => item.name === raceName);
+                return raceData ? raceData.subraces : [];
+            }
+
+            if (input.matches("[data-character-class]")) {
+                return CHARACTER_KNOWLEDGE.classes.map((item) => item.name);
+            }
+
+            if (input.matches("[data-character-subclass]")) {
+                const className = document.querySelector("[data-character-class]")?.value || "";
+                const classData = CHARACTER_KNOWLEDGE.classes.find((item) => item.name === className);
+                return classData ? classData.subclasses : [];
+            }
+
+            return [];
+        }
+
+        function closeSelectionDropdown(wrapper) {
+            if (!wrapper) return;
+            wrapper.classList.remove("is-open");
+            delete wrapper.dataset.activeIndex;
+        }
+
+        function closeAllSelectionDropdowns(except) {
+            document.querySelectorAll(".selection-input-wrap.is-open").forEach((wrapper) => {
+                if (wrapper !== except) {
+                    closeSelectionDropdown(wrapper);
+                }
+            });
+        }
+
+        function renderSelectionDropdown(input) {
+            const wrapper = input?.closest(".selection-input-wrap");
+            const dropdown = wrapper?.querySelector(".selection-dropdown");
+            if (!wrapper || !dropdown) return;
+
+            const allOptions = getSelectionSearchOptions(input);
+            const searchTerm = (wrapper.dataset.searchTerm || "").trim().toLowerCase();
+            const filtered = searchTerm
+                ? allOptions.filter((option) => option.toLowerCase().includes(searchTerm))
+                : allOptions;
+
+            if (input.disabled) {
+                dropdown.innerHTML = "";
+                closeSelectionDropdown(wrapper);
+                return;
+            }
+
+            if (!filtered.length) {
+                dropdown.innerHTML = '<div class="selection-empty">Ничего не найдено</div>';
+                delete wrapper.dataset.activeIndex;
+                return;
+            }
+
+            const normalizedCurrent = normalizeLookupName(input.value);
+            let activeIndex = Number.parseInt(wrapper.dataset.activeIndex || "-1", 10);
+            if (Number.isNaN(activeIndex) || activeIndex < 0 || activeIndex >= filtered.length) {
+                activeIndex = filtered.findIndex((option) => normalizeLookupName(option) === normalizedCurrent);
+            }
+            if (activeIndex < 0) activeIndex = 0;
+            wrapper.dataset.activeIndex = String(activeIndex);
+
+            dropdown.innerHTML = filtered
+                .map((option, index) => {
+                    const isCurrent = normalizeLookupName(option) === normalizedCurrent;
+                    const isActive = index === activeIndex ? " is-active" : isCurrent ? " is-current" : "";
+                    const safeValue = option.replace(/"/g, "&quot;");
+                    return `<button class="selection-option${isActive}" type="button" data-selection-value="${safeValue}">${option}</button>`;
+                })
+                .join("");
+        }
+
+        function moveSelectionDropdownActive(input, direction) {
+            const wrapper = input?.closest(".selection-input-wrap");
+            const dropdown = wrapper?.querySelector(".selection-dropdown");
+            const options = dropdown ? Array.from(dropdown.querySelectorAll(".selection-option")) : [];
+            if (!wrapper || !options.length) return;
+
+            let activeIndex = Number.parseInt(wrapper.dataset.activeIndex || "-1", 10);
+            if (Number.isNaN(activeIndex)) activeIndex = -1;
+            activeIndex += direction;
+
+            if (activeIndex < 0) activeIndex = options.length - 1;
+            if (activeIndex >= options.length) activeIndex = 0;
+
+            wrapper.dataset.activeIndex = String(activeIndex);
+            options.forEach((option, index) => option.classList.toggle("is-active", index === activeIndex));
+            options[activeIndex].scrollIntoView({ block: "nearest" });
+        }
+
+        function commitActiveSelection(input) {
+            const wrapper = input?.closest(".selection-input-wrap");
+            const dropdown = wrapper?.querySelector(".selection-dropdown");
+            const options = dropdown ? Array.from(dropdown.querySelectorAll(".selection-option")) : [];
+            if (!wrapper || !options.length) return false;
+
+            let activeIndex = Number.parseInt(wrapper.dataset.activeIndex || "-1", 10);
+            if (Number.isNaN(activeIndex) || activeIndex < 0 || activeIndex >= options.length) {
+                activeIndex = 0;
+            }
+
+            const option = options[activeIndex];
+            if (!option) return false;
+
+            input.value = option.dataset.selectionValue || "";
+            wrapper.dataset.searchTerm = "";
+            closeSelectionDropdown(wrapper);
+            input.dispatchEvent(new Event("change", { bubbles: true }));
+            return true;
+        }
+
+        function enhanceSelectionSearches() {
+            document.querySelectorAll("[data-selection-search] .character-input").forEach((input) => {
+                if (input.dataset.selectionEnhanced === "true") return;
+                input.dataset.selectionEnhanced = "true";
+
+                input.addEventListener("focus", () => {
+                    const wrapper = input.closest(".selection-input-wrap");
+                    if (wrapper) {
+                        delete wrapper.dataset.activeIndex;
+                        wrapper.dataset.searchTerm = "";
+                    }
+                    renderSelectionDropdown(input);
+                    closeAllSelectionDropdowns(wrapper);
+                    if (!input.disabled) {
+                        wrapper?.classList.add("is-open");
+                    }
+                });
+
+                input.addEventListener("input", () => {
+                    const wrapper = input.closest(".selection-input-wrap");
+                    if (wrapper) {
+                        delete wrapper.dataset.activeIndex;
+                        wrapper.dataset.searchTerm = input.value;
+                    }
+                    renderSelectionDropdown(input);
+                    closeAllSelectionDropdowns(wrapper);
+                    if (!input.disabled) {
+                        wrapper?.classList.add("is-open");
+                    }
+                });
+
+                input.addEventListener("keydown", (event) => {
+                    const wrapper = input.closest(".selection-input-wrap");
+                    if (event.key === "ArrowDown") {
+                        event.preventDefault();
+                        if (!wrapper?.classList.contains("is-open")) {
+                            renderSelectionDropdown(input);
+                            closeAllSelectionDropdowns(wrapper);
+                            wrapper?.classList.add("is-open");
+                        }
+                        moveSelectionDropdownActive(input, 1);
+                    } else if (event.key === "ArrowUp") {
+                        event.preventDefault();
+                        if (!wrapper?.classList.contains("is-open")) {
+                            renderSelectionDropdown(input);
+                            closeAllSelectionDropdowns(wrapper);
+                            wrapper?.classList.add("is-open");
+                        }
+                        moveSelectionDropdownActive(input, -1);
+                    } else if (event.key === "Enter") {
+                        if (wrapper?.classList.contains("is-open")) {
+                            event.preventDefault();
+                            commitActiveSelection(input);
+                        }
+                    } else if (event.key === "Escape") {
+                        closeSelectionDropdown(input.closest(".selection-input-wrap"));
+                    }
+                });
+            });
+        }
+
+        function getSelectOptionEntries(select) {
+            return Array.from(select.options).map((option) => ({
+                value: option.value,
+                label: option.textContent || option.value
+            }));
+        }
+
+        function closeCustomSelect(wrapper) {
+            if (!wrapper) return;
+            wrapper.classList.remove("is-open");
+            delete wrapper.dataset.activeIndex;
+        }
+
+        function closeAllCustomSelects(except) {
+            document.querySelectorAll(".custom-select.is-open").forEach((wrapper) => {
+                if (wrapper !== except) {
+                    closeCustomSelect(wrapper);
+                }
+            });
+        }
+
+        function renderCustomSelect(select) {
+            const wrapper = select?._customSelectWrapper;
+            const input = wrapper?.querySelector(".custom-select-input");
+            const panel = wrapper?.querySelector(".custom-select-panel");
+            if (!wrapper || !input || !panel) return;
+
+            const options = getSelectOptionEntries(select);
+            const searchTerm = (wrapper.dataset.searchTerm || "").trim().toLowerCase();
+            const filtered = searchTerm
+                ? options.filter((option) => option.label.toLowerCase().includes(searchTerm))
+                : options;
+            const selected = options.find((option) => option.value === select.value);
+
+            input.value = selected ? selected.label : wrapper.dataset.searchTerm || "";
+            input.placeholder = (options[0] && options[0].label) || "";
+            input.disabled = Boolean(select.disabled);
+            wrapper.classList.toggle("is-disabled", Boolean(select.disabled));
+
+            if (!filtered.length) {
+                panel.innerHTML = '<div class="custom-select-empty">Ничего не найдено</div>';
+                delete wrapper.dataset.activeIndex;
+                return;
+            }
+
+            let activeIndex = Number.parseInt(wrapper.dataset.activeIndex || "-1", 10);
+            if (Number.isNaN(activeIndex) || activeIndex < 0 || activeIndex >= filtered.length) {
+                activeIndex = filtered.findIndex((option) => option.value === select.value);
+            }
+            if (activeIndex < 0) activeIndex = 0;
+            wrapper.dataset.activeIndex = String(activeIndex);
+
+            panel.innerHTML = filtered
+                .map((option, index) => {
+                    const cls = index === activeIndex ? " is-active" : option.value === select.value ? " is-current" : "";
+                    const safeValue = option.value.replace(/"/g, "&quot;");
+                    return `<button class="custom-select-option${cls}" type="button" data-select-value="${safeValue}">${option.label}</button>`;
+                })
+                .join("");
+        }
+
+        function moveCustomSelectActive(select, direction) {
+            const wrapper = select?._customSelectWrapper;
+            const panel = wrapper?.querySelector(".custom-select-panel");
+            const options = panel ? Array.from(panel.querySelectorAll(".custom-select-option")) : [];
+            if (!wrapper || !options.length) return;
+
+            let activeIndex = Number.parseInt(wrapper.dataset.activeIndex || "-1", 10);
+            if (Number.isNaN(activeIndex)) activeIndex = -1;
+            activeIndex += direction;
+            if (activeIndex < 0) activeIndex = options.length - 1;
+            if (activeIndex >= options.length) activeIndex = 0;
+            wrapper.dataset.activeIndex = String(activeIndex);
+            options.forEach((option, index) => option.classList.toggle("is-active", index === activeIndex));
+            options[activeIndex].scrollIntoView({ block: "nearest" });
+        }
+
+        function commitCustomSelect(select) {
+            const wrapper = select?._customSelectWrapper;
+            const panel = wrapper?.querySelector(".custom-select-panel");
+            const options = panel ? Array.from(panel.querySelectorAll(".custom-select-option")) : [];
+            if (!wrapper || !options.length) return false;
+
+            let activeIndex = Number.parseInt(wrapper.dataset.activeIndex || "-1", 10);
+            if (Number.isNaN(activeIndex) || activeIndex < 0 || activeIndex >= options.length) {
+                activeIndex = 0;
+            }
+
+            const button = options[activeIndex];
+            if (!button) return false;
+
+            select.value = button.dataset.selectValue || "";
+            wrapper.dataset.searchTerm = "";
+            renderCustomSelect(select);
+            closeCustomSelect(wrapper);
+            select.dispatchEvent(new Event("input", { bubbles: true }));
+            select.dispatchEvent(new Event("change", { bubbles: true }));
+            return true;
+        }
+
+        function enhanceCustomSelects() {
+            document.querySelectorAll("select.lookup-select").forEach((select) => {
+                if (select._customSelectWrapper) return;
+
+                select.classList.add("custom-select-source");
+
+                const wrapper = document.createElement("div");
+                wrapper.className = "custom-select";
+
+                const control = document.createElement("div");
+                control.className = "custom-select-control";
+
+                const input = document.createElement("input");
+                input.type = "text";
+                input.className = "custom-select-input";
+                input.autocomplete = "off";
+                input.spellcheck = false;
+                input.dataset.uiOnly = "true";
+
+                const toggle = document.createElement("button");
+                toggle.type = "button";
+                toggle.className = "custom-select-toggle";
+                toggle.dataset.uiOnly = "true";
+                toggle.textContent = "▼";
+
+                const panel = document.createElement("div");
+                panel.className = "custom-select-panel";
+
+                control.appendChild(input);
+                control.appendChild(toggle);
+                wrapper.appendChild(control);
+                wrapper.appendChild(panel);
+                select.insertAdjacentElement("afterend", wrapper);
+                select._customSelectWrapper = wrapper;
+
+                input.addEventListener("focus", () => {
+                    wrapper.dataset.searchTerm = "";
+                    renderCustomSelect(select);
+                    closeAllCustomSelects(wrapper);
+                    if (!select.disabled) wrapper.classList.add("is-open");
+                });
+
+                input.addEventListener("input", () => {
+                    wrapper.dataset.searchTerm = input.value;
+                    renderCustomSelect(select);
+                    closeAllCustomSelects(wrapper);
+                    if (!select.disabled) wrapper.classList.add("is-open");
+                });
+
+                input.addEventListener("keydown", (event) => {
+                    if (event.key === "ArrowDown") {
+                        event.preventDefault();
+                        if (!wrapper.classList.contains("is-open")) {
+                            renderCustomSelect(select);
+                            closeAllCustomSelects(wrapper);
+                            wrapper.classList.add("is-open");
+                        }
+                        moveCustomSelectActive(select, 1);
+                    } else if (event.key === "ArrowUp") {
+                        event.preventDefault();
+                        if (!wrapper.classList.contains("is-open")) {
+                            renderCustomSelect(select);
+                            closeAllCustomSelects(wrapper);
+                            wrapper.classList.add("is-open");
+                        }
+                        moveCustomSelectActive(select, -1);
+                    } else if (event.key === "Enter") {
+                        if (wrapper.classList.contains("is-open")) {
+                            event.preventDefault();
+                            commitCustomSelect(select);
+                        }
+                    } else if (event.key === "Escape") {
+                        closeCustomSelect(wrapper);
+                    }
+                });
+
+                toggle.addEventListener("click", () => {
+                    const willOpen = !wrapper.classList.contains("is-open");
+                    wrapper.dataset.searchTerm = "";
+                    renderCustomSelect(select);
+                    closeAllCustomSelects(wrapper);
+                    wrapper.classList.toggle("is-open", willOpen);
+                    if (willOpen) input.focus();
+                });
+
+                panel.addEventListener("click", (event) => {
+                    const button = event.target.closest(".custom-select-option");
+                    if (!button) return;
+                    select.value = button.dataset.selectValue || "";
+                    wrapper.dataset.searchTerm = "";
+                    renderCustomSelect(select);
+                    closeCustomSelect(wrapper);
+                    select.dispatchEvent(new Event("input", { bubbles: true }));
+                    select.dispatchEvent(new Event("change", { bubbles: true }));
+                });
+
+                renderCustomSelect(select);
+            });
+        }
+
+        function syncAllCustomSelects() {
+            document.querySelectorAll("select.lookup-select").forEach((select) => renderCustomSelect(select));
+        }
+
+        function ensureLookupSuggestionPanels() {
+            document.querySelectorAll(".lookup-name").forEach((input) => {
+                if (input.closest(".lookup-input-wrap")) return;
+                input.autocomplete = "off";
+                input.spellcheck = false;
+                input.removeAttribute("list");
+
+                const wrap = document.createElement("div");
+                wrap.className = "lookup-input-wrap";
+                input.parentNode.insertBefore(wrap, input);
+                wrap.appendChild(input);
+
+                const panel = document.createElement("div");
+                panel.className = "lookup-suggestion-panel";
+                wrap.appendChild(panel);
+            });
+        }
+
+        function renderLookupSuggestions(row) {
+            const input = row?.querySelector(".lookup-name");
+            const wrap = input?.closest(".lookup-input-wrap");
+            const panel = wrap?.querySelector(".lookup-suggestion-panel");
+            if (!input || !wrap || !panel) return;
+
+            const items = getFilteredItems(row);
+            const searchTerm = (wrap.dataset.searchTerm || "").trim().toLowerCase();
+            const filtered = searchTerm
+                ? items.filter((item) => item.name.toLowerCase().includes(searchTerm))
+                : items;
+
+            if (!filtered.length) {
+                panel.innerHTML = '<div class="lookup-suggestion-empty">Ничего не найдено</div>';
+                delete wrap.dataset.activeIndex;
+                return;
+            }
+
+            const normalizedCurrent = normalizeLookupName(input.value);
+            let activeIndex = Number.parseInt(wrap.dataset.activeIndex || "-1", 10);
+            if (Number.isNaN(activeIndex) || activeIndex < 0 || activeIndex >= filtered.length) {
+                activeIndex = filtered.findIndex((item) => normalizeLookupName(item.name) === normalizedCurrent);
+            }
+            if (activeIndex < 0) activeIndex = 0;
+            wrap.dataset.activeIndex = String(activeIndex);
+
+            panel.innerHTML = filtered
+                .map((item, index) => {
+                    const cls = index === activeIndex ? " is-active" : normalizeLookupName(item.name) === normalizedCurrent ? " is-current" : "";
+                    const safeValue = item.name.replace(/"/g, "&quot;");
+                    return `<button class="lookup-suggestion${cls}" type="button" data-lookup-value="${safeValue}">${item.name}</button>`;
+                })
+                .join("");
+        }
+
+        function moveLookupSuggestionActive(row, direction) {
+            const wrap = row?.querySelector(".lookup-input-wrap");
+            const panel = wrap?.querySelector(".lookup-suggestion-panel");
+            const options = panel ? Array.from(panel.querySelectorAll(".lookup-suggestion")) : [];
+            if (!wrap || !options.length) return;
+
+            let activeIndex = Number.parseInt(wrap.dataset.activeIndex || "-1", 10);
+            if (Number.isNaN(activeIndex)) activeIndex = -1;
+            activeIndex += direction;
+            if (activeIndex < 0) activeIndex = options.length - 1;
+            if (activeIndex >= options.length) activeIndex = 0;
+            wrap.dataset.activeIndex = String(activeIndex);
+            options.forEach((option, index) => option.classList.toggle("is-active", index === activeIndex));
+            options[activeIndex].scrollIntoView({ block: "nearest" });
+        }
+
+        function closeLookupSuggestions(row) {
+            const wrap = row?.querySelector(".lookup-input-wrap");
+            if (!wrap) return;
+            wrap.classList.remove("is-open");
+            delete wrap.dataset.activeIndex;
+        }
+
+        function closeAllLookupSuggestions(exceptRow) {
+            document.querySelectorAll(".lookup-input-wrap.is-open").forEach((wrap) => {
+                const row = wrap.closest("[data-lookup-type]");
+                if (row !== exceptRow) {
+                    wrap.classList.remove("is-open");
+                    delete wrap.dataset.activeIndex;
+                }
+            });
+        }
+
+        function commitLookupSuggestion(row) {
+            const input = row?.querySelector(".lookup-name");
+            const wrap = row?.querySelector(".lookup-input-wrap");
+            const panel = wrap?.querySelector(".lookup-suggestion-panel");
+            const options = panel ? Array.from(panel.querySelectorAll(".lookup-suggestion")) : [];
+            if (!input || !wrap || !options.length) return false;
+
+            let activeIndex = Number.parseInt(wrap.dataset.activeIndex || "-1", 10);
+            if (Number.isNaN(activeIndex) || activeIndex < 0 || activeIndex >= options.length) {
+                activeIndex = 0;
+            }
+            const button = options[activeIndex];
+            if (!button) return false;
+
+            input.value = button.dataset.lookupValue || "";
+            wrap.dataset.searchTerm = "";
+            updateLookupRow(row);
+            row.querySelectorAll(".lookup-field-area").forEach((field) => autoResizeLookupField(field));
+            refreshLookupConfirmState(row);
+            closeLookupSuggestions(row);
+            updateDerivedValues();
+            savePageState();
+            return true;
+        }
+
+
+        function ensureLookupConfirmControls() {
+            document.querySelectorAll("[data-lookup-type]").forEach((row) => {
+                if (!row.querySelector(".lookup-confirmed-value")) {
+                    const hidden = document.createElement("input");
+                    hidden.type = "hidden";
+                    hidden.className = "lookup-confirmed-value";
+                    row.appendChild(hidden);
+                }
+
+                if (!row.querySelector(".lookup-actions")) {
+                    const actions = document.createElement("div");
+                    actions.className = "lookup-actions";
+
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "lookup-confirm-btn";
+                    button.textContent = "Подтвердить выбор";
+
+                    actions.appendChild(button);
+                    row.appendChild(actions);
+                }
+
+                refreshLookupConfirmState(row);
+            });
+        }
+
+        function getLookupCategory(row) {
+            const type = row?.dataset.lookupType;
+            if (type === "weapon") return "weapons";
+            if (type === "armor") return "armors";
+            if (type === "equipment") return "equipment";
+            return "spells";
+        }
+
+        function getConfirmedLookupName(row) {
+            return row.querySelector(".lookup-confirmed-value")?.value || "";
+        }
+
+        function refreshLookupConfirmState(row) {
+            const button = row.querySelector(".lookup-confirm-btn");
+            const hidden = row.querySelector(".lookup-confirmed-value");
+            const input = row.querySelector(".lookup-name");
+            if (!button || !hidden || !input) return;
+
+            const currentValue = input.value.trim();
+            const confirmedValue = hidden.value.trim();
+            const isConfirmed = Boolean(confirmedValue) && currentValue === confirmedValue;
+
+            button.classList.toggle("is-confirmed", isConfirmed);
+            button.textContent = isConfirmed ? "Выбор подтвержден" : "Подтвердить выбор";
+        }
+
+        function confirmLookupRow(row) {
+            const input = row.querySelector(".lookup-name");
+            const hidden = row.querySelector(".lookup-confirmed-value");
+            if (!input || !hidden) return;
+
+            const category = getLookupCategory(row);
+            const match = findKnowledgeItem(category, input.value.trim());
+            hidden.value = match ? match.name : "";
+            refreshLookupConfirmState(row);
+        }
+
+        function findKnowledgeItem(category, name) {
+            const items = Array.isArray(KNOWLEDGE_BASE?.[category]) ? KNOWLEDGE_BASE[category] : [];
+            const normalized = normalizeLookupName(name || "");
+            if (!normalized) return null;
+            return items.find((item) => normalizeLookupName(item.name) === normalized) || null;
+        }
+
+        function getArmorClassTotal(dexMod) {
+            const shieldRow = document.querySelector('[data-lookup-type="armor"] input.lookup-name[placeholder="Название щита"]')?.closest("[data-lookup-type]");
+            const armorRow = document.querySelector('[data-lookup-type="armor"] input.lookup-name[placeholder="Название доспеха"]')?.closest("[data-lookup-type]");
+            const shieldItem = findKnowledgeItem("armors", shieldRow ? getConfirmedLookupName(shieldRow) : "");
+            const armorItem = findKnowledgeItem("armors", armorRow ? getConfirmedLookupName(armorRow) : "");
+
+            let total = 10 + dexMod;
+
+            if (armorItem && armorItem.armorType !== "Щит") {
+                const armorClassText = String(armorItem.armorClass || "");
+                const baseMatch = armorClassText.match(/\d+/);
+                const baseArmor = baseMatch ? Number.parseInt(baseMatch[0], 10) : 10;
+
+                if (/макс\.\s*\+?2/i.test(armorClassText)) {
+                    total = baseArmor + Math.min(dexMod, 2);
+                } else if (/Лов/i.test(armorClassText)) {
+                    total = baseArmor + dexMod;
+                } else {
+                    total = baseArmor;
+                }
+            }
+
+            if (shieldItem) {
+                const shieldBonusMatch = String(shieldItem.armorClass || "").match(/[+-]?\d+/);
+                if (shieldBonusMatch) {
+                    total += Number.parseInt(shieldBonusMatch[0], 10) || 0;
+                }
+            }
+
+            return total;
+        }
+
+        function getPersistableFields() {
+            return Array.from(document.querySelectorAll(".sheet input, .sheet textarea, .sheet select")).filter((field) => {
+                if (field.type === "file") return false;
+                if (field.readOnly) return false;
+                return true;
+            });
+        }
+
+        function ensurePersistKeys() {
+            getPersistableFields().forEach((field, index) => {
+                if (!field.dataset.persistKey) {
+                    field.dataset.persistKey = `field-${index}`;
+                }
+            });
+        }
+
+        function capturePageState() {
+            ensurePersistKeys();
+            const state = {};
+
+            getPersistableFields().forEach((field) => {
+                const key = field.dataset.persistKey;
+                if (!key) return;
+
+                if (field.type === "checkbox" || field.type === "radio") {
+                    state[key] = { checked: field.checked };
+                    return;
+                }
+
+                state[key] = { value: field.value };
+            });
+
+            return state;
+        }
+
+        function savePageState() {
+            if (isRestoringPageState) return;
+            localStorage.setItem(PAGE_STATE_KEY, JSON.stringify(capturePageState()));
+        }
+
+        function resetPageState() {
+            localStorage.removeItem(PAGE_STATE_KEY);
+            localStorage.removeItem("interactiveCharacterPortrait");
+            window.location.reload();
+        }
+
+        function loadPageState() {
+            ensurePersistKeys();
+
+            const raw = localStorage.getItem(PAGE_STATE_KEY);
+            if (!raw) return;
+
+            let saved;
+            try {
+                saved = JSON.parse(raw);
+            } catch (error) {
+                console.error("interactiveCharacterSheetState parse error", error);
+                return;
+            }
+
+            isRestoringPageState = true;
+
+            const fields = getPersistableFields();
+            const deferred = [];
+
+            fields.forEach((field) => {
+                const key = field.dataset.persistKey;
+                const snapshot = key ? saved[key] : null;
+                if (!snapshot) return;
+
+                if (field.matches("[data-character-subrace], [data-character-subclass]")) {
+                    deferred.push({ field, snapshot });
+                    return;
+                }
+
+                if (field.type === "checkbox" || field.type === "radio") {
+                    field.checked = Boolean(snapshot.checked);
+                } else if (typeof snapshot.value !== "undefined") {
+                    field.value = snapshot.value;
+                }
+            });
+
+            updateSubraceOptions();
+            updateSubclassOptions();
+            applyRaceTraits();
+            applyClassVitals();
+
+            deferred.forEach(({ field, snapshot }) => {
+                if (field.type === "checkbox" || field.type === "radio") {
+                    field.checked = Boolean(snapshot.checked);
+                } else if (typeof snapshot.value !== "undefined") {
+                    field.value = snapshot.value;
+                }
+            });
+
+            const subraceWrap = document.querySelector("[data-subrace-wrap]");
+            if (subraceWrap) {
+                const subraceSelect = document.querySelector("[data-character-subrace]");
+                subraceWrap.classList.toggle("is-empty", !(subraceSelect && subraceSelect.value));
+            }
+
+            const subclassWrap = document.querySelector("[data-subclass-wrap]");
+            if (subclassWrap) {
+                const subclassSelect = document.querySelector("[data-character-subclass]");
+                subclassWrap.classList.toggle("is-empty", !(subclassSelect && subclassSelect.value));
+            }
+
+            sanitizeExperienceCurrent();
+            updateExperienceDisplay();
+            document.querySelectorAll("[data-lookup-type]").forEach((row) => refreshLookupConfirmState(row));
+            applyRaceTraits();
+            applyClassVitals();
+            syncAllCustomSelects();
+            updateDerivedValues();
+            isRestoringPageState = false;
         }
 
         function autoResizeLookupField(field) {
@@ -2481,6 +4083,67 @@
                 area.value = field.value || "";
                 field.replaceWith(area);
                 autoResizeLookupField(area);
+            });
+        }
+
+        function enhanceLookupInputs() {
+            document.querySelectorAll(".lookup-name").forEach((input) => {
+                if (input.dataset.lookupEnhanced === "true") return;
+                input.dataset.lookupEnhanced = "true";
+                input.autocomplete = "off";
+
+                input.addEventListener("focus", () => {
+                    const row = input.closest("[data-lookup-type]");
+                    const wrap = row?.querySelector(".lookup-input-wrap");
+                    if (!row || !wrap) return;
+                    delete wrap.dataset.activeIndex;
+                    wrap.dataset.searchTerm = "";
+                    closeAllLookupSuggestions(row);
+                    wrap.classList.add("is-open");
+                    renderLookupSuggestions(row);
+                });
+
+                input.addEventListener("input", () => {
+                    const row = input.closest("[data-lookup-type]");
+                    const wrap = row?.querySelector(".lookup-input-wrap");
+                    if (!row || !wrap) return;
+                    delete wrap.dataset.activeIndex;
+                    wrap.dataset.searchTerm = input.value;
+                    closeAllLookupSuggestions(row);
+                    wrap.classList.add("is-open");
+                    renderLookupSuggestions(row);
+                });
+
+                input.addEventListener("keydown", (event) => {
+                    const row = input.closest("[data-lookup-type]");
+                    const wrap = row?.querySelector(".lookup-input-wrap");
+                    if (!row || !wrap) return;
+
+                    if (event.key === "ArrowDown") {
+                        event.preventDefault();
+                        if (!wrap.classList.contains("is-open")) {
+                            closeAllLookupSuggestions(row);
+                            wrap.classList.add("is-open");
+                            renderLookupSuggestions(row);
+                        }
+                        moveLookupSuggestionActive(row, 1);
+                    } else if (event.key === "ArrowUp") {
+                        event.preventDefault();
+                        if (!wrap.classList.contains("is-open")) {
+                            closeAllLookupSuggestions(row);
+                            wrap.classList.add("is-open");
+                            renderLookupSuggestions(row);
+                        }
+                        moveLookupSuggestionActive(row, -1);
+                    } else if (event.key === "Enter") {
+                        if (wrap.classList.contains("is-open")) {
+                            event.preventDefault();
+                            commitLookupSuggestion(row);
+                        }
+                    } else if (event.key === "Escape") {
+                        closeLookupSuggestions(row);
+                    }
+                });
             });
         }
 
@@ -2524,11 +4187,7 @@
         }
 
         function syncRowDataList(row, rowIndex) {
-            const type = row.dataset.lookupType;
-            const listId = `${type}-list-${rowIndex}`;
-            const input = row.querySelector(".lookup-name");
-            if (input) input.setAttribute("list", listId);
-            populateDataList(listId, getFilteredItems(row));
+            renderLookupSuggestions(row);
         }
 
         function updateLookupRow(row) {
@@ -2574,6 +4233,10 @@
         function updateDerivedValues() {
             const scores = getAbilityScores();
             const mods = {};
+            const levelInput = document.querySelector("[data-character-level]");
+            const parsedLevel = levelInput ? Number.parseInt(levelInput.value, 10) : 1;
+            const safeLevel = Math.max(1, Math.min(20, Number.isNaN(parsedLevel) ? 1 : parsedLevel));
+            const proficiencyBonus = getProficiencyBonus(safeLevel);
 
             Object.entries(scores).forEach(([key, score]) => {
                 const mod = scoreToModifier(score);
@@ -2587,18 +4250,31 @@
                 initiativeOutput.value = formatModifier(mods.dex || 0);
             }
 
+            const armorClassOutput = document.querySelector("[data-armor-class-output]");
+            if (armorClassOutput) {
+                armorClassOutput.value = String(getArmorClassTotal(mods.dex || 0));
+            }
+
+            const proficiencyOutput = document.querySelector("[data-proficiency-output]");
+            if (proficiencyOutput) {
+                proficiencyOutput.value = formatModifier(proficiencyBonus);
+            }
+
             document.querySelectorAll("[data-save-output]").forEach((output) => {
                 const key = output.dataset.saveOutput;
                 const checkbox = document.querySelector(`.save-prof[data-ability-ref="${key}"]`);
-                const total = (mods[key] || 0) + (checkbox && checkbox.checked ? PROFICIENCY_BONUS : 0);
+                const total = (mods[key] || 0) + (checkbox && checkbox.checked ? proficiencyBonus : 0);
                 output.value = formatModifier(total);
             });
 
             document.querySelectorAll("[data-skill-ability]").forEach((row) => {
                 const key = row.dataset.skillAbility;
-                const selected = row.querySelector(".prof-radio:checked");
-                const extra = selected ? Number.parseInt(selected.value, 10) || 0 : 0;
-                const total = (mods[key] || 0) + extra;
+                const isProficient = Boolean(row.querySelector(".skill-prof")?.checked);
+                const hasExpertise = Boolean(row.querySelector(".skill-expertise")?.checked);
+                let total = (mods[key] || 0) + (isProficient ? proficiencyBonus : 0);
+                if (hasExpertise) {
+                    total *= 2;
+                }
                 const output = row.querySelector(".skill-bonus-input");
                 if (output) output.value = formatModifier(total);
             });
@@ -2616,45 +4292,66 @@
             updateAllLookups();
         }
 
-        document.addEventListener("mousedown", (event) => {
-            if (event.target.matches(".prof-radio")) {
-                event.target.dataset.wasChecked = event.target.checked ? "true" : "false";
-            }
-        });
-
-        document.addEventListener("click", (event) => {
-            if (event.target.matches(".prof-radio") && event.target.dataset.wasChecked === "true") {
-                event.target.checked = false;
-                event.target.dataset.wasChecked = "false";
-                updateDerivedValues();
-            }
-        });
-
         document.addEventListener("input", (event) => {
             if (event.target.matches("[data-ability]")) {
                 updateDerivedValues();
             } else if (event.target.matches("[data-character-level]")) {
                 updateExperienceDisplay();
+                updateDerivedValues();
+            } else if (event.target.matches("[data-character-race]")) {
+                updateSubraceOptions();
+                applyRaceTraits();
+            } else if (event.target.matches("[data-character-subrace]")) {
+                const subraceWrap = document.querySelector("[data-subrace-wrap]");
+                if (subraceWrap) {
+                    subraceWrap.classList.toggle("is-empty", !event.target.value);
+                }
+                applyRaceTraits();
             } else if (event.target.matches("[data-experience-current]")) {
                 sanitizeExperienceCurrent();
             } else if (event.target.matches(".lookup-name")) {
                 const row = event.target.closest("[data-lookup-type]");
+                closeAllLookupSuggestions(row);
+                row.querySelector(".lookup-input-wrap")?.classList.add("is-open");
+                renderLookupSuggestions(row);
                 updateLookupRow(row);
                 row.querySelectorAll(".lookup-field-area").forEach((field) => autoResizeLookupField(field));
+                refreshLookupConfirmState(row);
+                updateDerivedValues();
             } else if (event.target.matches("[data-filter]")) {
                 const row = event.target.closest("[data-lookup-type]");
                 const rowIndex = Array.from(document.querySelectorAll("[data-lookup-type]")).indexOf(row);
+                renderCustomSelect(event.target);
                 syncRowDataList(row, rowIndex);
                 updateLookupRow(row);
                 row.querySelectorAll(".lookup-field-area").forEach((field) => autoResizeLookupField(field));
+                refreshLookupConfirmState(row);
+                updateDerivedValues();
+            }
+
+            if (event.target.closest(".sheet")) {
+                savePageState();
             }
         });
 
         document.addEventListener("focusin", (event) => {
             if (event.target.matches(".lookup-name")) {
                 const row = event.target.closest("[data-lookup-type]");
-                const rowIndex = Array.from(document.querySelectorAll("[data-lookup-type]")).indexOf(row);
-                syncRowDataList(row, rowIndex);
+                closeAllLookupSuggestions(row);
+                row.querySelector(".lookup-input-wrap")?.classList.add("is-open");
+                syncRowDataList(row, 0);
+            }
+        });
+
+        document.addEventListener("mousedown", (event) => {
+            if (!event.target.closest(".selection-input-wrap")) {
+                closeAllSelectionDropdowns();
+            }
+            if (!event.target.closest(".lookup-input-wrap")) {
+                closeAllLookupSuggestions();
+            }
+            if (!event.target.closest(".custom-select")) {
+                closeAllCustomSelects();
             }
         });
 
@@ -2669,53 +4366,161 @@
                 reader.onload = () => {
                     setPortrait(reader.result);
                     localStorage.setItem("interactiveCharacterPortrait", reader.result);
+                    savePageState();
                 };
                 reader.readAsDataURL(file);
                 return;
             }
 
-            if (event.target.matches("[data-ability], .save-prof, .prof-radio")) {
+            if (event.target.matches("[data-ability], .save-prof, .skill-prof, .skill-expertise")) {
                 updateDerivedValues();
             } else if (event.target.matches("[data-character-race]")) {
+                event.target.value = normalizeKnownValue(
+                    event.target.value,
+                    CHARACTER_KNOWLEDGE.races.map((item) => item.name)
+                );
                 updateSubraceOptions();
+                applyRaceTraits();
             } else if (event.target.matches("[data-character-subrace]")) {
+                const raceName = document.querySelector("[data-character-race]")?.value || "";
+                const raceData = CHARACTER_KNOWLEDGE.races.find((item) => item.name === raceName);
+                event.target.value = normalizeKnownValue(event.target.value, raceData ? raceData.subraces : []);
                 const subraceWrap = document.querySelector("[data-subrace-wrap]");
                 if (subraceWrap) {
                     subraceWrap.classList.toggle("is-empty", !event.target.value);
                 }
+                applyRaceTraits();
             } else if (event.target.matches("[data-character-class]")) {
+                event.target.value = normalizeKnownValue(
+                    event.target.value,
+                    CHARACTER_KNOWLEDGE.classes.map((item) => item.name)
+                );
                 updateSubclassOptions();
+                applyClassVitals();
             } else if (event.target.matches("[data-character-subclass]")) {
+                const className = document.querySelector("[data-character-class]")?.value || "";
+                const classData = CHARACTER_KNOWLEDGE.classes.find((item) => item.name === className);
+                event.target.value = normalizeKnownValue(event.target.value, classData ? classData.subclasses : []);
                 const subclassWrap = document.querySelector("[data-subclass-wrap]");
                 if (subclassWrap) {
                     subclassWrap.classList.toggle("is-empty", !event.target.value);
                 }
             } else if (event.target.matches("[data-character-level]")) {
                 updateExperienceDisplay();
+                updateDerivedValues();
             } else if (event.target.matches("[data-experience-current]")) {
                 sanitizeExperienceCurrent();
                 updateExperienceDisplay();
+            } else if (event.target.matches(".lookup-name, [data-filter]")) {
+                updateDerivedValues();
+            }
+
+            if (event.target.closest(".sheet")) {
+                savePageState();
             }
         });
 
         document.addEventListener("click", (event) => {
-            if (event.target.matches(".portrait-clear")) {
+            if (event.target.matches(".stepper-btn")) {
+                const targetSelector = event.target.dataset.stepTarget;
+                const step = Number.parseInt(event.target.dataset.step, 10) || 0;
+                const input = targetSelector ? document.querySelector(targetSelector) : null;
+                if (input) {
+                    const current = Number.parseInt(input.value, 10);
+                    const min = input.min !== "" ? Number.parseInt(input.min, 10) : null;
+                    const max = input.max !== "" ? Number.parseInt(input.max, 10) : null;
+                    let next = (Number.isNaN(current) ? 0 : current) + step;
+
+                    if (min !== null && !Number.isNaN(min)) next = Math.max(min, next);
+                    if (max !== null && !Number.isNaN(max)) next = Math.min(max, next);
+
+                    input.value = String(next);
+                    input.dispatchEvent(new Event("input", { bubbles: true }));
+                    input.dispatchEvent(new Event("change", { bubbles: true }));
+                }
+            } else if (event.target.matches(".lookup-confirm-btn")) {
+                const row = event.target.closest("[data-lookup-type]");
+                if (row) {
+                    confirmLookupRow(row);
+                    updateDerivedValues();
+                    savePageState();
+                }
+            } else if (event.target.matches(".portrait-clear")) {
                 const input = document.querySelector(".portrait-input");
                 if (input) input.value = "";
                 localStorage.removeItem("interactiveCharacterPortrait");
                 setPortrait("");
+                savePageState();
+            } else if (event.target.matches(".page-reset-button")) {
+                resetPageState();
+            } else if (event.target.matches("[data-music-toggle]")) {
+                const widget = document.querySelector("[data-music-widget]");
+                if (widget) {
+                    const nextCollapsed = !widget.classList.contains("is-collapsed");
+                    localStorage.setItem(MUSIC_WIDGET_STATE_KEY, nextCollapsed ? "1" : "0");
+                    applyMusicWidgetState();
+                }
+            } else if (event.target.matches(".selection-option")) {
+                const value = event.target.dataset.selectionValue || "";
+                const wrapper = event.target.closest(".selection-input-wrap");
+                const input = wrapper?.querySelector(".character-input");
+                if (input) {
+                    input.value = value;
+                    wrapper.dataset.searchTerm = "";
+                    closeSelectionDropdown(wrapper);
+                    input.dispatchEvent(new Event("change", { bubbles: true }));
+                }
+            } else if (event.target.matches(".lookup-suggestion")) {
+                const row = event.target.closest("[data-lookup-type]");
+                const input = row?.querySelector(".lookup-name");
+                if (row && input) {
+                    input.value = event.target.dataset.lookupValue || "";
+                    updateLookupRow(row);
+                    row.querySelectorAll(".lookup-field-area").forEach((field) => autoResizeLookupField(field));
+                    refreshLookupConfirmState(row);
+                    closeLookupSuggestions(row);
+                    updateDerivedValues();
+                    savePageState();
+                }
+            } else if (event.target.matches(".custom-select-option")) {
+                const wrapper = event.target.closest(".custom-select");
+                const select = Array.from(document.querySelectorAll("select.lookup-select")).find(
+                    (item) => item._customSelectWrapper === wrapper
+                );
+                if (select) {
+                    select.value = event.target.dataset.selectValue || "";
+                    wrapper.dataset.searchTerm = "";
+                    renderCustomSelect(select);
+                    closeCustomSelect(wrapper);
+                    select.dispatchEvent(new Event("input", { bubbles: true }));
+                    select.dispatchEvent(new Event("change", { bubbles: true }));
+                }
             }
         });
 
         upgradeLookupFields();
         buildKnowledgeBase();
+        ensureLookupConfirmControls();
+        enhanceSelectionSearches();
+        enhanceCustomSelects();
+        ensureLookupSuggestionPanels();
+        enhanceLookupInputs();
+        applyDefaultPlaceholders();
+        applyMusicWidgetState();
+        ensurePersistKeys();
         populateRaceOptions();
         updateSubraceOptions();
+        applyRaceTraits();
         populateClassOptions();
         updateSubclassOptions();
+        applyClassVitals();
+        syncAllCustomSelects();
         updateExperienceDisplay();
         loadStoredPortrait();
+        loadPageState();
+        normalizeSaveLabels();
         updateDerivedValues();
     </script>
 </body>
 </html>
+
