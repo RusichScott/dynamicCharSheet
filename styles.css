@@ -1,0 +1,1730 @@
+* {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", "Roboto", sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px;
+            background: #7a6a5a;
+        }
+
+        .sheet {
+            width: min(1120px, 100%);
+            background: linear-gradient(145deg, #f8f2df 0%, #ece1cd 100%);
+            border: 3px solid #3e2c1c;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.45);
+            padding: 22px;
+            color: #2f2115;
+        }
+
+        .page-reset-button {
+            position: fixed;
+            left: 18px;
+            bottom: 18px;
+            z-index: 50;
+            border: 2px solid #3e2c1c;
+            background: linear-gradient(180deg, #c94132 0%, #92281d 100%);
+            color: #fff7ea;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+            padding: 12px 18px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .page-reset-button:hover {
+            filter: brightness(1.08);
+        }
+
+        .page-reset-button:active {
+            transform: translateY(1px);
+        }
+
+        .music-widget {
+            position: fixed;
+            top: 18px;
+            right: 18px;
+            width: min(360px, calc(100vw - 36px));
+            z-index: 45;
+            border: 2px solid #3e2c1c;
+            background: linear-gradient(145deg, #f8f2df 0%, #ece1cd 100%);
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
+            color: #2f2115;
+        }
+
+        .music-widget.is-collapsed .music-widget-body {
+            display: none;
+        }
+
+        .music-widget-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(62, 44, 28, 0.22);
+        }
+
+        .music-widget-title {
+            font-size: 0.9rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .music-widget-toggle {
+            min-width: 34px;
+            height: 32px;
+            border: 1px solid #3e2c1c;
+            background: linear-gradient(180deg, #f4e6c9 0%, #d2b786 100%);
+            color: #2f2115;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .music-widget-toggle:hover {
+            filter: brightness(1.04);
+        }
+
+        .music-widget-body {
+            padding: 10px;
+        }
+
+        .music-widget-note {
+            font-size: 0.78rem;
+            color: #5b4a34;
+            margin-bottom: 8px;
+        }
+
+        .music-widget-frame {
+            display: block;
+            width: 100%;
+            height: 360px;
+            border: 1px solid rgba(62, 44, 28, 0.24);
+            background: #f3ead7;
+        }
+
+        .name-level-row {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .portrait-area {
+            width: 130px;
+            height: 160px;
+            border: 3px solid #3e2c1c;
+            background: linear-gradient(145deg, #d6c29b, #b9a17e);
+            box-shadow: inset 0 0 0 2px #fff8e7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #5b4a34;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 10px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .portrait-placeholder {
+            position: relative;
+            z-index: 1;
+        }
+
+        .portrait-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: linear-gradient(145deg, #d6c29b, #b9a17e);
+            display: none;
+        }
+
+        .portrait-area.has-image .portrait-image {
+            display: block;
+        }
+
+        .portrait-area.has-image .portrait-placeholder {
+            display: none;
+        }
+
+        .portrait-input {
+            display: none;
+        }
+
+        .portrait-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .portrait-clear {
+            border: 1px solid #3e2c1c;
+            background: #efe2c6;
+            color: #2f2115;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .name-fields {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .name-top-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 148px;
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        .inline-fields {
+            display: grid;
+            grid-template-columns: minmax(0, 1.28fr) minmax(0, 1.28fr) minmax(160px, 0.72fr);
+            gap: 15px;
+        }
+
+        .inline-fields .field-box {
+            min-width: 0;
+        }
+
+        .field-box.race-box,
+        .field-box.class-box,
+        .field-box.exp-box {
+            min-width: 0;
+        }
+
+        .character-input,
+        .character-select {
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: inherit;
+            outline: none;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .character-select {
+            appearance: none;
+            padding-right: 8px;
+        }
+
+        .selection-line {
+            display: grid;
+            grid-template-columns: minmax(132px, 0.96fr) minmax(0, 1.22fr);
+            align-items: center;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .selection-line.with-level {
+            grid-template-columns: minmax(96px, 0.9fr) minmax(0, 1.1fr);
+        }
+
+        .selection-main {
+            min-width: 0;
+        }
+
+        .selection-input-wrap {
+            position: relative;
+            min-width: 0;
+            border-bottom: 1px solid rgba(62, 44, 28, 0.28);
+        }
+
+        .selection-input-wrap::after {
+            content: "▼";
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.72rem;
+            color: #5b4a34;
+            pointer-events: none;
+        }
+
+        .selection-input-wrap.is-disabled {
+            opacity: 0.65;
+        }
+
+        .selection-input-wrap .character-input {
+            padding-right: 14px;
+        }
+
+        .selection-input-wrap.is-open {
+            z-index: 20;
+        }
+
+        .selection-dropdown {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            display: none;
+            max-height: 220px;
+            overflow-y: auto;
+            border: 1px solid #3e2c1c;
+            background: #fffaf0;
+            box-shadow: 0 10px 18px rgba(62, 44, 28, 0.18);
+        }
+
+        .selection-dropdown,
+        .custom-select-panel,
+        .lookup-suggestion-panel {
+            scrollbar-width: thin;
+            scrollbar-color: #8e7755 #f3ead7;
+        }
+
+        .selection-dropdown::-webkit-scrollbar,
+        .custom-select-panel::-webkit-scrollbar,
+        .lookup-suggestion-panel::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .selection-dropdown::-webkit-scrollbar-track,
+        .custom-select-panel::-webkit-scrollbar-track,
+        .lookup-suggestion-panel::-webkit-scrollbar-track {
+            background: #f3ead7;
+            border-left: 1px solid rgba(62, 44, 28, 0.14);
+        }
+
+        .selection-dropdown::-webkit-scrollbar-thumb,
+        .custom-select-panel::-webkit-scrollbar-thumb,
+        .lookup-suggestion-panel::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #bda17a 0%, #8e7755 100%);
+            border: 1px solid #6b563c;
+        }
+
+        .selection-input-wrap.is-open .selection-dropdown {
+            display: block;
+        }
+
+        .selection-option {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid rgba(62, 44, 28, 0.12);
+            background: transparent;
+            color: inherit;
+            text-align: left;
+            padding: 8px 10px;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .selection-option:last-child {
+            border-bottom: none;
+        }
+
+        .selection-option:hover,
+        .selection-option.is-active {
+            background: #efe2c6;
+        }
+
+        .selection-option.is-current:not(.is-active) {
+            background: rgba(239, 226, 198, 0.45);
+        }
+
+        .selection-empty {
+            padding: 8px 10px;
+            color: rgba(47, 33, 21, 0.65);
+            font-size: 0.9rem;
+        }
+
+        .custom-select-source {
+            display: none !important;
+        }
+
+        .custom-select {
+            position: relative;
+            min-width: 0;
+            width: 100%;
+        }
+
+        .custom-select-control {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 28px;
+            align-items: center;
+            gap: 6px;
+            min-height: 30px;
+            border: 1px solid #b09e84;
+            background: #fffaf0;
+            padding: 4px 6px;
+        }
+
+        .custom-select-input {
+            width: 100%;
+            min-width: 0;
+            border: none;
+            background: transparent;
+            color: inherit;
+            outline: none;
+            font: inherit;
+            line-height: 1.3;
+            padding: 0;
+        }
+
+        .custom-select-toggle {
+            border: 1px solid #3e2c1c;
+            background: linear-gradient(180deg, #efe1c2 0%, #d7c39e 100%);
+            color: #2f2115;
+            min-width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 1px 1px 0 #fff6df, inset -1px -1px 0 #b39c78;
+            cursor: pointer;
+            font-size: 0.72rem;
+            line-height: 1;
+        }
+
+        .custom-select-panel {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            z-index: 25;
+            display: none;
+            max-height: 220px;
+            overflow-y: auto;
+            border: 1px solid #3e2c1c;
+            background: #fffaf0;
+            box-shadow: 0 10px 18px rgba(62, 44, 28, 0.18);
+        }
+
+        .custom-select.is-open .custom-select-panel {
+            display: block;
+        }
+
+        .custom-select-option {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid rgba(62, 44, 28, 0.12);
+            background: transparent;
+            color: inherit;
+            text-align: left;
+            padding: 8px 10px;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .custom-select-option:last-child {
+            border-bottom: none;
+        }
+
+        .custom-select-option:hover,
+        .custom-select-option.is-active,
+        .custom-select-option.is-current:not(.is-active) {
+            background: #efe2c6;
+        }
+
+        .custom-select-empty {
+            padding: 8px 10px;
+            color: rgba(47, 33, 21, 0.65);
+            font-size: 0.9rem;
+        }
+
+        .lookup-input-wrap {
+            position: relative;
+        }
+
+        .lookup-suggestion-panel {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            z-index: 22;
+            display: none;
+            max-height: 220px;
+            overflow-y: auto;
+            border: 1px solid #3e2c1c;
+            background: #fffaf0;
+            box-shadow: 0 10px 18px rgba(62, 44, 28, 0.18);
+        }
+
+        .lookup-input-wrap.is-open .lookup-suggestion-panel {
+            display: block;
+        }
+
+        .lookup-suggestion {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid rgba(62, 44, 28, 0.12);
+            background: transparent;
+            color: inherit;
+            text-align: left;
+            padding: 8px 10px;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .lookup-suggestion:last-child {
+            border-bottom: none;
+        }
+
+        .lookup-suggestion:hover,
+        .lookup-suggestion.is-active,
+        .lookup-suggestion.is-current:not(.is-active) {
+            background: #efe2c6;
+        }
+
+        .lookup-suggestion-empty {
+            padding: 8px 10px;
+            color: rgba(47, 33, 21, 0.65);
+            font-size: 0.9rem;
+        }
+
+        .selection-sub {
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 1px;
+            overflow: visible;
+        }
+
+        .selection-sub.is-empty .selection-bracket,
+        .selection-sub.is-empty .character-input {
+            opacity: 0.7;
+        }
+
+        .selection-bracket {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #5b4a34;
+            flex: 0 0 auto;
+        }
+
+        .selection-sub-select {
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+
+        .race-box .selection-main,
+        .race-box .selection-sub-select,
+        .class-box .selection-main,
+        .class-box .selection-sub-select {
+            font-size: 0.95rem;
+        }
+
+        .level-input {
+            width: 56px;
+            text-align: right;
+            margin-left: auto;
+            font-weight: 700;
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .stepper-control {
+            display: grid;
+            grid-template-columns: 28px minmax(0, 1fr) 28px;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stepper-btn {
+            border: 1px solid #3e2c1c;
+            background: linear-gradient(180deg, #efe1c2 0%, #d7c39e 100%);
+            color: #2f2115;
+            min-width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 800;
+            line-height: 1;
+            cursor: pointer;
+            box-shadow: inset 1px 1px 0 #fff6df, inset -1px -1px 0 #b39c78;
+        }
+
+        .stepper-btn:active {
+            transform: translateY(1px);
+        }
+
+        .level-stepper {
+            grid-template-columns: 24px minmax(36px, 48px) 24px;
+            justify-content: center;
+            margin-left: 0;
+        }
+
+        .level-stepper .stepper-btn {
+            min-width: 24px;
+            height: 24px;
+            font-size: 0.9rem;
+        }
+
+        .level-stepper .level-input {
+            width: 100%;
+            min-width: 0;
+            margin-left: 0;
+            text-align: center;
+            justify-self: stretch;
+        }
+
+        .experience-line {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .experience-separator {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #5b4a34;
+            flex: 0 0 auto;
+        }
+
+        .experience-threshold {
+            text-align: right;
+            font-weight: 700;
+            color: #5b4a34;
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+
+        .experience-current {
+            flex: 1 1 auto;
+            min-width: 72px;
+            text-align: left;
+        }
+
+        .character-select,
+        .character-input {
+            min-width: 0;
+        }
+
+        .field-box,
+        .ability-box,
+        .combat-item,
+        .trait-field,
+        .magic-panel,
+        .footer-inventory {
+            border: 2px solid #3e2c1c;
+            background: #fffbf2;
+            box-shadow: inset 1px 1px 0 #c0b29a, inset -1px -1px 0 #c0b29a;
+        }
+
+        .field-box,
+        .combat-item,
+        .trait-field,
+        .footer-inventory,
+        .magic-panel {
+            padding: 10px 12px;
+        }
+
+        .field-label,
+        .combat-label,
+        .ability-name {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #3e2c1c;
+        }
+
+        .field-label {
+            border-bottom: 1px solid #b09e84;
+            padding-bottom: 2px;
+            margin-bottom: 6px;
+        }
+
+        .editable,
+        .editable-area,
+        .editable-inline,
+        .editable-number,
+        .skill-name-input,
+        .skill-bonus-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: inherit;
+            outline: none;
+        }
+
+        .editable {
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 1.2;
+            min-height: 2.2rem;
+        }
+
+        .editable-inline,
+        .editable-area,
+        .skill-name-input,
+        .skill-bonus-input {
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .editable-area {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .small-input {
+            font-size: 1rem;
+            font-weight: 500;
+            min-height: 1.6rem;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 198px minmax(0, 1fr);
+            gap: 18px;
+            align-items: stretch;
+            margin-bottom: 18px;
+        }
+
+        .abilities-column {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        .ability-box {
+            text-align: center;
+            padding: 10px 8px;
+        }
+
+        .ability-name {
+            border-bottom: 1px solid #3e2c1c;
+            padding-bottom: 5px;
+            margin-bottom: 8px;
+        }
+
+        .ability-score-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: inherit;
+            outline: none;
+        }
+
+        .ability-mod-input {
+            width: 100%;
+            margin-top: 8px;
+            border: 1px solid #3e2c1c;
+            background: #dccdb6;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 4px 6px;
+            outline: none;
+        }
+
+        .stats-and-skills {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            height: 100%;
+        }
+
+        .combat-groups {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .combat-group {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .combat-group.wide {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .combat-item {
+            min-height: 88px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .combat-number {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 1.9rem;
+            font-weight: 700;
+            line-height: 1.1;
+            outline: none;
+            color: inherit;
+        }
+
+        .combat-display {
+            width: 100%;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: clip;
+            white-space: nowrap;
+            margin-top: auto;
+        }
+
+        .combat-number[data-race-speed-output] {
+            display: flex;
+            align-items: flex-end;
+            font-size: 1.9rem;
+            letter-spacing: 0;
+            text-align: left;
+            line-height: 1.1;
+            min-height: 2.2rem;
+        }
+
+        .combat-note {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 0.85rem;
+            color: inherit;
+            outline: none;
+            margin-top: 6px;
+        }
+
+        .skills-saves {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+            align-items: stretch;
+        }
+
+        .left-skills,
+        .right-skills {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: 100%;
+        }
+
+        .right-skills {
+            display: grid;
+            grid-template-rows: auto 1fr;
+        }
+
+        .skill-panel {
+            padding: 10px 12px;
+        }
+
+        .skill-row,
+        .save-row {
+            display: grid;
+            align-items: center;
+            padding: 4px 0;
+            border-bottom: 1px dotted #7f6e58;
+        }
+
+        .save-row {
+            grid-template-columns: 20px minmax(0, 1fr) 108px 58px;
+            gap: 8px;
+        }
+
+        .skill-row {
+            grid-template-columns: 8px minmax(0, 1fr) 124px 58px;
+            gap: 4px;
+        }
+
+        .skill-check {
+            width: 22px;
+            height: 22px;
+            accent-color: #3e2c1c;
+            justify-self: center;
+        }
+
+        .skill-name-input {
+            min-width: 0;
+            font-size: 0.95rem;
+        }
+
+        .skill-row .skill-name-input {
+            margin-left: -8px;
+        }
+
+        .skill-bonus-input {
+            text-align: right;
+            font-weight: 700;
+        }
+
+        .prof-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            justify-content: flex-end;
+            white-space: nowrap;
+        }
+
+        .prof-controls label {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.78rem;
+            color: #3e2c1c;
+        }
+
+        .skill-prof,
+        .skill-expertise {
+            accent-color: #3e2c1c;
+        }
+
+        .expertise-toggle {
+            border: 1px solid #3e2c1c;
+            background: #e8d8b8;
+            padding: 1px 6px;
+            border-radius: 999px;
+            font-weight: 700;
+        }
+
+        .info-under-skills {
+            display: grid;
+            grid-template-columns: 180px minmax(0, 1fr);
+            gap: 12px;
+            align-items: stretch;
+            height: 100%;
+        }
+
+        .info-under-skills .field-box {
+            min-height: 100%;
+            height: 100%;
+        }
+
+        .info-under-skills .editable-area {
+            height: 100%;
+        }
+
+        .background-selection-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 6px;
+            height: 100%;
+        }
+
+        .background-selection-item {
+            min-width: 0;
+        }
+
+        .background-selection-label {
+            display: block;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #5b4a34;
+            margin-bottom: 2px;
+        }
+
+        .ideal-suggestion-panel {
+            margin-top: 6px;
+            border: 1px solid rgba(62, 44, 28, 0.22);
+            background: #fffaf0;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .ideal-suggestion-panel:empty {
+            display: none;
+        }
+
+        .ideal-suggestion-option {
+            display: block;
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid rgba(62, 44, 28, 0.14);
+            background: transparent;
+            color: #2f2115;
+            text-align: left;
+            padding: 8px 10px;
+            font-size: 0.84rem;
+            line-height: 1.35;
+            cursor: pointer;
+        }
+
+        .ideal-suggestion-option:last-child {
+            border-bottom: none;
+        }
+
+        .ideal-suggestion-option:hover,
+        .ideal-suggestion-option.is-active {
+            background: #ead7b1;
+        }
+
+        .section-row-3 {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: auto;
+            align-self: end;
+            justify-content: stretch;
+            width: 100%;
+        }
+
+        .weapons-row,
+        .bottom-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .post-inventory-row {
+            margin-top: 16px;
+        }
+
+        .lookup-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .gear-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .gear-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .coin-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .coin-box {
+            border: 1px solid #b09e84;
+            background: #f9f2e4;
+            padding: 8px;
+        }
+
+        .lookup-row {
+            border: 1px solid #b09e84;
+            background: #f9f2e4;
+            padding: 8px;
+        }
+
+        .lookup-filters {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .lookup-select {
+            width: 100%;
+            border: 1px solid #b09e84;
+            background: #fffaf0;
+            color: inherit;
+            padding: 4px 6px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .lookup-name {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid #b09e84;
+            background: transparent;
+            padding: 2px 0 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: inherit;
+            outline: none;
+        }
+
+        .lookup-hint {
+            font-size: 0.72rem;
+            color: #6f5a44;
+            margin-top: 4px;
+        }
+
+        .lookup-meta {
+            margin-top: 6px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .lookup-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .lookup-confirm-btn {
+            border: 2px solid #3e2c1c;
+            background: linear-gradient(180deg, #efe1c2 0%, #d7c39e 100%);
+            color: #2f2115;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            box-shadow: inset 1px 1px 0 #fff6df, inset -1px -1px 0 #b39c78;
+        }
+
+        .lookup-confirm-btn.is-confirmed {
+            background: linear-gradient(180deg, #d8ead3 0%, #b8d3ad 100%);
+        }
+
+        .lookup-field {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .lookup-field-label {
+            display: block;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            color: #6f5a44;
+            margin-bottom: 2px;
+        }
+
+        .lookup-field-value {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 0.92rem;
+            line-height: 1.25;
+            color: inherit;
+            outline: none;
+            min-width: 0;
+        }
+
+        .lookup-field-area {
+            resize: none;
+            overflow: hidden;
+            min-height: 2.4em;
+            padding: 0;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .lookup-row[data-lookup-type="weapon"] .lookup-field.field-properties,
+        .lookup-row[data-lookup-type="spell"] .lookup-field.field-classes,
+        .lookup-row[data-lookup-type="spell"] .lookup-field.field-effect,
+        .lookup-row[data-lookup-type="armor"] .lookup-field.field-notes,
+        .lookup-row[data-lookup-type="equipment"] .lookup-field.field-notes {
+            grid-column: 1 / -1;
+        }
+
+        .spell-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 25px;
+            border-bottom: 2px solid #3e2c1c;
+            padding-bottom: 6px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .traits-section {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin: 0 0 10px;
+        }
+
+        .trait-field {
+            min-height: 110px;
+        }
+
+        .footer-note {
+            margin-top: 12px;
+            padding: 8px 10px;
+            border: 1px solid #3e2c1c;
+            background: #f5e6d3;
+            font-size: 0.9rem;
+            grid-column: 1 / -1;
+        }
+
+        hr {
+            border: 1px solid #3e2c1c;
+            margin: 16px 0;
+        }
+
+        @media (max-width: 920px) {
+            body {
+                padding: 18px;
+            }
+
+            .sheet {
+                width: 100%;
+                padding: 18px;
+            }
+
+            .main-layout,
+            .skills-saves,
+            .info-under-skills,
+            .section-row-3,
+            .traits-section,
+            .bottom-row,
+            .combat-groups,
+            .weapons-row,
+            .inline-fields {
+                grid-template-columns: 1fr;
+            }
+
+            .name-top-row {
+                grid-template-columns: 1fr;
+            }
+
+            .combat-group,
+            .combat-group.wide {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .name-level-row {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .portrait-wrapper {
+                width: 100%;
+            }
+
+            .portrait-area {
+                width: 100%;
+                height: 180px;
+            }
+
+            .combat-groups,
+            .combat-group,
+            .combat-group.wide,
+            .gear-grid,
+            .lookup-meta,
+            .lookup-filters {
+                gap: 10px;
+            }
+
+            .field-box,
+            .combat-item,
+            .trait-field,
+            .magic-panel,
+            .footer-inventory,
+            .lookup-row {
+                padding: 12px;
+            }
+
+            .selection-line {
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            }
+
+            .selection-line.with-level {
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 72px;
+            }
+
+            .lookup-name,
+            .lookup-select,
+            .editable-inline,
+            .editable-area,
+            .skill-name-input,
+            .skill-bonus-input,
+            .combat-note,
+            .lookup-field-value {
+                font-size: 0.98rem;
+            }
+
+            .coin-box {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 10px;
+            }
+
+            .sheet {
+                padding: 12px;
+                border-width: 2px;
+            }
+
+            .inline-fields,
+            .combat-group,
+            .combat-group.wide,
+            .weapons-row,
+            .gear-grid,
+            .coin-grid,
+            .lookup-filters,
+            .lookup-meta,
+            .section-row-3,
+            .traits-section {
+                grid-template-columns: 1fr;
+            }
+
+            .main-layout {
+                gap: 12px;
+            }
+
+            .abilities-column {
+                gap: 8px;
+            }
+
+            .ability-box {
+                padding: 8px 10px;
+            }
+
+            .ability-score-input {
+                font-size: 1.8rem;
+            }
+
+            .ability-mod-input {
+                font-size: 1rem;
+            }
+
+            .combat-item {
+                min-height: 78px;
+            }
+
+            .save-row {
+                grid-template-columns: 20px minmax(0, 1fr) 82px 52px;
+                gap: 6px;
+            }
+
+            .skill-row {
+                grid-template-columns: 8px minmax(0, 1fr) 108px 52px;
+                gap: 4px;
+            }
+
+            .skill-name-input,
+            .save-row .editable-inline {
+                font-size: 0.9rem;
+            }
+
+            .prof-controls {
+                gap: 6px;
+                font-size: 0.78rem;
+            }
+
+            .skill-check {
+                width: 20px;
+                height: 20px;
+            }
+
+            .lookup-row {
+                padding: 10px;
+            }
+
+            .lookup-name {
+                padding-bottom: 8px;
+                font-size: 0.95rem;
+            }
+
+            .lookup-field-label {
+                font-size: 0.66rem;
+            }
+
+            .lookup-field-value,
+            .lookup-field-area {
+                font-size: 0.9rem;
+            }
+
+            .info-under-skills {
+                gap: 10px;
+            }
+
+            .portrait-area {
+                height: 210px;
+            }
+
+            .selection-line {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .selection-line.with-level {
+                grid-template-columns: 1fr;
+            }
+
+            .selection-main,
+            .selection-sub,
+            .level-input {
+                width: 100%;
+                flex-basis: auto;
+            }
+
+            .level-input {
+                margin-left: 0;
+                text-align: left;
+            }
+
+            .experience-line {
+                grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+            }
+
+            .portrait-clear {
+                width: 100%;
+                min-height: 42px;
+                font-size: 0.9rem;
+            }
+
+            .editable-area {
+                min-height: 110px;
+            }
+
+            .post-inventory-row {
+                margin-top: 12px;
+            }
+
+            hr {
+                margin: 12px 0;
+            }
+        }
+
+        @media (max-width: 420px) {
+            body {
+                padding: 6px;
+            }
+
+            .sheet {
+                padding: 10px;
+            }
+
+            .field-label,
+            .combat-label,
+            .ability-name {
+                font-size: 0.68rem;
+            }
+
+            .editable {
+                font-size: 1.2rem;
+            }
+
+            .portrait-area {
+                height: 180px;
+            }
+
+            .save-row {
+                grid-template-columns: 18px minmax(0, 1fr) 74px 46px;
+                gap: 4px;
+            }
+
+            .skill-row {
+                grid-template-columns: 8px minmax(0, 1fr) 96px 46px;
+                gap: 3px;
+            }
+
+            .prof-controls {
+                gap: 4px;
+                font-size: 0.7rem;
+            }
+
+            .lookup-name,
+            .lookup-select,
+            .editable-inline,
+            .skill-name-input,
+            .skill-bonus-input,
+            .lookup-field-value,
+            .lookup-field-area {
+                font-size: 0.86rem;
+            }
+
+            .combat-number {
+                font-size: 1.45rem;
+            }
+
+            .combat-note {
+                font-size: 0.8rem;
+            }
+        }
+
+        @page {
+            size: A4 landscape;
+            margin: 6mm;
+        }
+
+        @media print {
+            .page-reset-button,
+            .music-widget {
+                display: none !important;
+            }
+
+            html,
+            body {
+                width: 100%;
+                min-height: auto;
+                background: #ffffff !important;
+                margin: 0;
+                padding: 0;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            body {
+                display: block;
+            }
+
+            .sheet {
+                width: 100%;
+                max-width: none;
+                border: 2px solid #3e2c1c;
+                box-shadow: none;
+                padding: 7px;
+                background: #f8f2df !important;
+            }
+
+            .field-box,
+            .ability-box,
+            .combat-item,
+            .trait-field,
+            .magic-panel,
+            .footer-inventory,
+            .lookup-row,
+            .coin-box {
+                box-shadow: none;
+                break-inside: auto;
+                page-break-inside: auto;
+            }
+
+            .name-level-row,
+            .main-layout,
+            .skills-saves,
+            .info-under-skills,
+            .weapons-row,
+            .gear-grid,
+            .coin-grid,
+            .combat-groups,
+            .combat-group,
+            .combat-group.wide,
+            .lookup-meta,
+            .lookup-filters,
+            .section-row-3,
+            .bottom-row {
+                break-inside: auto;
+                page-break-inside: auto;
+            }
+
+            .portrait-clear,
+            .portrait-input,
+            .lookup-hint {
+                display: none !important;
+            }
+
+            .name-level-row,
+            .inline-fields,
+            .combat-groups,
+            .skills-saves,
+            .traits-section,
+            .weapons-row,
+            .gear-grid,
+            .coin-grid,
+            .bottom-row {
+                page-break-before: auto;
+                page-break-after: auto;
+            }
+
+            .name-level-row {
+                margin-bottom: 8px;
+            }
+
+            .main-layout {
+                gap: 8px;
+                margin-bottom: 8px;
+            }
+
+            .abilities-column,
+            .stats-and-skills,
+            .left-skills,
+            .right-skills,
+            .lookup-panel,
+            .gear-panel {
+                gap: 5px;
+            }
+
+            .inline-fields,
+            .skills-saves,
+            .traits-section,
+            .weapons-row,
+            .gear-grid,
+            .coin-grid,
+            .combat-groups,
+            .combat-group,
+            .combat-group.wide,
+            .lookup-meta,
+            .lookup-filters,
+            .section-row-3,
+            .bottom-row {
+                gap: 5px;
+            }
+
+            .field-box,
+            .combat-item,
+            .trait-field,
+            .footer-inventory,
+            .magic-panel,
+            .lookup-row,
+            .coin-box {
+                padding: 5px 6px;
+            }
+
+            .portrait-area {
+                width: 96px;
+                height: 118px;
+                box-shadow: none;
+            }
+
+            .editable,
+            .ability-score-input,
+            .combat-number {
+                font-size: 1.12rem;
+            }
+
+            .editable-inline,
+            .editable-area,
+            .skill-name-input,
+            .skill-bonus-input,
+            .lookup-name,
+            .lookup-field-value,
+            .combat-note {
+                font-size: 0.72rem;
+                line-height: 1.08;
+            }
+
+            .field-label,
+            .combat-label,
+            .ability-name,
+            .lookup-field-label {
+                font-size: 0.54rem;
+            }
+
+            .ability-box {
+                padding: 6px 4px;
+            }
+
+            .ability-mod-input {
+                font-size: 0.82rem;
+                margin-top: 4px;
+                padding: 2px 3px;
+            }
+
+            .combat-item {
+                min-height: 54px;
+            }
+
+            .skill-row {
+                grid-template-columns: 8px minmax(0, 1fr) 90px 44px;
+                gap: 2px;
+                padding: 2px 0;
+            }
+
+            .save-row {
+                grid-template-columns: 16px minmax(0, 1fr) 72px 44px;
+                gap: 4px;
+                padding: 2px 0;
+            }
+
+            .prof-controls {
+                gap: 3px;
+                font-size: 0.62rem;
+            }
+
+            .lookup-field-area,
+            .editable-area {
+                min-height: 1.65em;
+            }
+
+            hr {
+                margin: 6px 0;
+            }
+
+            .inline-fields {
+                gap: 4px;
+            }
+
+            .combat-groups,
+            .combat-group,
+            .combat-group.wide {
+                gap: 4px;
+            }
+
+            .gear-grid,
+            .weapons-row {
+                gap: 6px;
+            }
+
+            .coin-grid {
+                gap: 4px;
+            }
+
+            .field-label {
+                margin-bottom: 3px;
+                padding-bottom: 1px;
+            }
+
+            .lookup-filters {
+                margin-bottom: 4px;
+            }
+
+            .lookup-meta {
+                margin-top: 4px;
+            }
+
+            .lookup-hint {
+                display: none !important;
+            }
+
+            .traits-section,
+            .footer-inventory,
+            .field-box[style*="margin-bottom: 12px"],
+            .field-box[style*="margin: 12px 0"] {
+                break-inside: auto;
+                page-break-inside: auto;
+            }
+
+            .ability-box,
+            .combat-item,
+            .coin-box {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            .editable-area {
+                resize: none;
+                overflow: visible;
+            }
+        }
+
+        @media (max-width: 920px) {
+            .music-widget {
+                position: static;
+                width: min(1120px, 100%);
+                margin: 0 auto 16px;
+            }
+        }
